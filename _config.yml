@@ -1,0 +1,41 @@
+# Site settings
+title: "Khushi Agrawal"
+email: khushiagrawal411@gmail.com
+description: "Personal blog of Khushi Agrawal"
+baseurl: ""
+url: https://khushi-411.github.io
+enforse_ssl: khushi-411.github.io
+title_description: "Programming blog of Khushi Agrawal."
+title_image: "/favicons/android-chrome-192x192.png"
+post_limit: 5
+
+# Social usernames/URLs
+twitter_username: khushi__411
+github_username:  khushi-411
+linkedin_link: https://www.linkedin.com/in/khushi-agrawal-413511194
+stackoverflow_link:
+disqus_account:
+google_analytics: "G-YKX1RPNC5G"
+
+# Footer
+footer_right: "<a href=\"https://github.com/jacobtomlinson/carte-noire\">Carte Noir</a> theme by <a href=\"https://twitter.com/_JacobTomlinson\">Jacob Tomlinson</a>"
+footer_center: "&copy; 2017 <a href=\"https://twitter.com/khushi__411\">Khushi Agrawal</a>"
+footer_left: "&lt;/&gt; on <a href=\"https://github.com/khushi-411/khushi-411.github.io\">Github</a> &nbsp;<i class=\"fa fa-github-alt\"></i>"
+
+# Build settings
+markdown: kramdown
+
+kramdown:
+  input: GFM
+
+permalink: pretty
+exclude: [vendor]
+
+#RSS
+name: "Khushi Agrawal's Blog"
+
+redirects: yes
+permalink: /:title/
+
+gems:
+  - jekyll-redirect-from

@@ -1,0 +1,108 @@
+---
+layout: default
+make-smaller-titles: true
+---
+
+
+<div class="container-fluid index">
+  <div class="row">
+
+    <div class="col-md-12 main content-panel">
+
+      <div class="gravatar">
+        <img src="{{ site.title_image }}" class="img-circle about-image" height="150" width="150" alt="{{ site.title }}" />
+      </div>
+
+      <h1 class="header author-header" itemprop="headline">{{ site.title }}</h1>
+
+      <div class="author-text">
+        {{ site.title_description }}
+      </div>
+
+      {% include social_links.html %}
+    </div>
+    <div class="col-md-12 main content-panel">
+
+      <div class="articles">
+
+        <h2>Latest Blog Articles</h2>
+
+        <ul>
+          {% for post in site.posts | limit: site.post_limit %}
+          {% unless post.pubdraft %}
+          <li>
+            <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+            <small class="hidden-xs">{{ post.date | date: "%B %-d, %Y" }}</small>
+          </li>
+          {% endunless %}
+          {% endfor %}
+
+          <li>
+
+            <small><i><a href="{{ site.baseurl }}/posts/">more...</a></i></small>
+          </li>
+        </ul>
+
+      </div>
+
+    </div>
+
+    <div class="col-md-12 main content-panel">
+
+      <div class="about">
+
+	      <h2>About Me</h2>
+		I am a student, a Software Developer (PyTorch & NumPy), and a Deep Learning enthusiast. I recently developed an interest in Modern C++. I am excited to learn new things. 
+
+		<br/>
+		<br/>
+
+		I am from India, which is known for its ancient history, varied landscapes, and diverse culture. I am pursuing my graduation in Data Science & Artificial Intelligence (2019-2023) from the International Institute of Information Technology, Naya Raipur.
+
+		<br/>
+		<br/>
+
+		I aim to bring the best in myself and help the growing minds via my work. The blog focuses on inspiring concepts of Software Development, the Open Source World, and depth knowledge in Deep Learning and Data Science.
+
+		<br/>
+		<br/>
+
+		Currently, I am indulged in the following areas:
+
+		<ul>
+			<li>Performance Comparision between Object Detection Networks (Fast R-CNN VS Faster R-CNN)</li>
+		</ul>
+		
+	<section id="cd-timeline" class="cd-container">
+	  <div class="cd-timeline-block">
+	    <div class="cd-timeline-img cd-picture">
+              <img class="cd-timeline-quansight" src="{{site-base}}/assets/quansight.jpeg">
+            </div>
+	    <div class="cd-timeline-content">
+	      <h2>Quansight Internship</h2>
+              <p>I worked under the mentorship of Matti Picus; added performance benchmarks in the NumPy. I worked with the NumPy team of the Quansight Labs.</p>
+   	      <span class="cd-date">July'23 - Sept'23</span>
+	    </div> <!-- cd-timeline-content -->
+          </div>
+	</section> <!-- cd-timeline -->
+
+	</div>
+    </div>
+
+    <div class="col-md-12 main content-panel">
+
+      <div class="blogs">
+        <h2>Other blogs I like</h2>
+        <ul>
+		<li><a href="">Quansight Labs</a> &mdash; <a href="https://www.quansight.com/blog">Blog</a></li>
+	
+	</ul>
+      
+      </div>
+    </div>
+
+   </div>
+ </div>
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="{{ site.baseurl }}/js/timeline.js" type="text/javascript"></script>
