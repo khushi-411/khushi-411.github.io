@@ -3,10 +3,11 @@ layout: post
 title: Exploratory Statistical Analysis
 date: 2021-06-05
 category: datascience
-tags: data-science
+tags: 
+- data-science
 redirect_from:
-: /datascience/2021/06/05/exploratory-analysis/
-: /exploratory-analysis.html
+- /datascience/2021/06/05/exploratory-analysis/
+- /exploratory-analysis.html
 ---
 
 {% highlight python %}

@@ -3,10 +3,11 @@ layout: post
 title: Inferential Statistical Analysis
 date: 2021-06-06
 category: datascience
-tags: data-science
+tags: 
+- data-science
 redirect_from:
-: /datascience/2021/06/06/inferential-stat-analysis/
-: /inferential-stat-analysis.html
+- /datascience/2021/06/06/inferential-stat-analysis/
+- /inferential-stat-analysis.html
 ---
 
 ### **T-Test**
