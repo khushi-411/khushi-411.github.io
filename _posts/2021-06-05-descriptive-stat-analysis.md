@@ -4,10 +4,10 @@ title: Descriptive Statistical Analysis
 date: 2021-06-05
 category: datascience
 tags: 
-	- data-science
+- data-science
 redirect_from:
-	- /datascience/2021/06/05/descriptive-stat-analysis/
-	- /descriptive-stat-analysis.html
+- /datascience/2021/06/05/descriptive-stat-analysis/
+- /descriptive-stat-analysis.html
 ---
 
 {% highlight python %}

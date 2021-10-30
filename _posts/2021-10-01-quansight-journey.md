@@ -4,10 +4,10 @@ title: My First Internship: Journey in the Quansight Labs!!
 date: 2021-10-01
 category: journey
 tags: 
-	- journey
+- journey
 redirect_from:
-	- /journey/2021/10/01/quansight-journey/
-	- /quansight-journey.html
+- /journey/2021/10/01/quansight-journey/
+- /quansight-journey.html
 ---
 
 In this blog post, I'll be talking about my journey in Quansight. 
