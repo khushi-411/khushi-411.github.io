@@ -3,10 +3,11 @@ layout: post
 title: Installing PyTorch from Source
 date: 2021-07-25
 category: pytorch
-tags: pytorch
+tags: 
+	- pytorch
 redirect_from:
-: /pytorch/2021/07/25/installing-pytorch-from-source/
-: /installing-pytorch-from-source.html
+	- /pytorch/2021/07/25/installing-pytorch-from-source/
+	- /installing-pytorch-from-source.html
 ---
 
 {% highlight python %}
