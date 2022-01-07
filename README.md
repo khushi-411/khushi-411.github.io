@@ -1,3 +1,2 @@
-![Build and Deploy to Github Pages](https://github.com/khushi-411/khushi-411.github.io/workflows/Build%20and%20Deploy%20to%20Github%20Pages/badge.svg)
-
+The blog is at [khushi-411.github.io](https://khushi-411.github.io/).
 Let's enjoy the journey!
