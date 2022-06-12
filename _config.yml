@@ -14,11 +14,11 @@ twitter_username: khushi__411
 github_username:  khushi-411
 linkedin_link: https://www.linkedin.com/in/khushi-agrawal-413511194
 stackoverflow_link:
-disqus_account:
+disqus_account: khushi-411
 google_analytics: "G-YKX1RPNC5G"
 
 # Footer
-footer_right: "<a href=\"https://github.com/jacobtomlinson/carte-noire\">Carte Noir</a> theme by <a href=\"https://twitter.com/_JacobTomlinson\">Jacob Tomlinson</a> and <a href=\"https://twitter.com/TartanLlama\">Sy Brand</a>"
+footer_right: "<a href=\"https://github.com/jacobtomlinson/carte-noire\">Carte Noir</a> theme by <a href=\"https://twitter.com/_JacobTomlinson\">Jacob Tomlinson</a>"
 footer_center: "&copy; 2021 <a href=\"https://twitter.com/khushi__411\">Khushi Agrawal</a>"
 footer_left: "&lt;/&gt; on <a href=\"https://github.com/khushi-411/khushi-411.github.io\">Github</a> &nbsp;<i class=\"fa fa-github-alt\"></i>"
 
