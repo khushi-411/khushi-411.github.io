@@ -107,6 +107,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ==12011==ABORTING
 ```
 ***Note 1***: You can get another check by adding `-g` in the command line for more description.
+
 ***Note 2***: Clang will throw an error even if you don't turn on the warnings check-in command.
 
 I recommend the viewers change the check-in commands in GCC and Clang to see the
