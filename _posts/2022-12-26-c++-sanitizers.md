@@ -147,7 +147,7 @@ Refer [stack-overflow](https://stackoverflow.com/questions/28236870/error-undefi
 
 The code again runs completely fine. Let's try adding another check using the Clang compiler. Use:
 ```
-clang 2.cpp -Wall -Wextra -Werror -lstdc++ -fsanitize=memory
+clang memory.cpp -Wall -Wextra -Werror -lstdc++ -fsanitize=memory
 ```
 ***Note 4***: Currently, GCC does not support the MemorySanitizer.
 
