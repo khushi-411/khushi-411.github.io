@@ -34,7 +34,7 @@ Compile the code using the following GCC command:
 ```cpp
 g++ address.cpp -Wall -Werror
 ```
-And then execute using `./a.out`. Or try running the code using `clang`. Use the following command:
+And then execute using `./a.out`. Or try running the code using Clang. Use the following command:
 ```cpp
 clang address.cpp -Wall -Werror
 ```
@@ -42,7 +42,7 @@ The code runs fine for both compilers even if we turn on the warnings argument (
 ```cpp
 g++ address.cpp -Wall -Werror -fsanitize=address
 ```
-Or using `clang`:
+Or using Clang:
 ```cpp
 clang address.cpp -Wall -Werror -fsanitize=address
 ```
@@ -130,17 +130,18 @@ Compile the code using the following GCC command:
 ```cpp
 g++ memory.cpp -Wall -Wextra
 ```
-Then execute the code using `./a.out`. Or try compiling using clang:
+Then execute the code using `./a.out`. Or try compiling using Clang:
 ```cpp
 clang memory.cpp -Wall -Wextra
 ```
-The code again runs completely fine. Let's try adding another check using the clang compiler. Use:
+The code again runs completely fine. Let's try adding another check using the Clang compiler. Use:
 ```
 clang memory.cpp -Wall -Wextra -fsanitize=memory
 ```
-***Note 3***: Currently, gcc does not support the MemorySanitizer.
+***Note 3***: Currently, GCC does not support the MemorySanitizer.
+
 Coming back to the result part, we caught a similar issue as in AddressSanitizer.
-As shown below, clang throws a linker error, and the program gets terminated.
+As shown below, Clang throws a linker error, and the program gets terminated.
 ```cpp
 /usr/bin/ld: /tmp/2-a58743.o: in function `main':
 2.cpp:(.text+0x1c0): undefined reference to `std::cout'
@@ -155,6 +156,7 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 clang memory.cpp -Wall -Wextra -fsanitize-memory-track-origins
 ```
 ***Note 5***: To get any stack traces, add `-fno-omit-frame-pointer`.
+
 TODO: read about Valgrind and benchmark it.
 
 ### UndefinedBehaviourSanitizer
@@ -177,7 +179,7 @@ Compile the code using:
 ```cpp
 g++ ubcheck.cpp -Wall -Werror
 ```
-And run using `./a.out`. It runs fine and produces the following output:
+And execute using `./a.out`. It runs fine and produces the following output:
 ```cpp
 -nan
 abs:-2147483648
