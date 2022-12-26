@@ -199,10 +199,10 @@ ubcheck.cpp:7:34: warning: conversion from ‘float’ to ‘int’ may change v
 
 ### Closing Remarks & Acknowledgement
 This post taught us the essential details about Address, Memory, and UndefinedBehaviour Sanitizers in C++.
-Hope you enjoyed reading the blog post.
+Hope you enjoyed reading it!
 
 Before ending this post, I want to devote my vote of appreciation to
 Janson Turner for his informative [video on C++ Sanitizers](https://www.youtube.com/watch?v=MB6NPkB4YVs),
-Google team for descriptive [repository on GitHub](https://github.com/google/sanitizers) about sanitizers,
-and Kshitij Kalambarkar & Sanchit Jain for explanatory comments on [Github PR](https://github.com/pytorch/pytorch/commit/dfd2edc025b284abc6972bdcfaa9f4f7b8808036).
+Kshitij Kalambarkar & Sanchit Jain for explanatory comments on [Github PR](https://github.com/pytorch/pytorch/commit/dfd2edc025b284abc6972bdcfaa9f4f7b8808036),
+and Google team for descriptive [repository on GitHub](https://github.com/google/sanitizers) about sanitizers.
 Thanks to you all! It was fun learning!
