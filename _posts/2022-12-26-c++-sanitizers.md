@@ -216,6 +216,7 @@ This post taught us the essential details about Address, Memory, and UndefinedBe
 Hope you enjoyed reading it!
 
 Before ending this post, I want to devote my vote of appreciation to
+Kshitij Kalambarkar for providing helpful comments by reviewing the blog,
 Janson Turner for his informative [video on C++ Sanitizers](https://www.youtube.com/watch?v=MB6NPkB4YVs),
 Kshitij Kalambarkar & Sanchit Jain for explanatory comments on [Github PR](https://github.com/pytorch/pytorch/commit/dfd2edc025b284abc6972bdcfaa9f4f7b8808036),
 and Google team for descriptive [repository on GitHub](https://github.com/google/sanitizers) about sanitizers.
