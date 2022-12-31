@@ -10,15 +10,21 @@ redirect_from:
 - /cpp-sanitizers.html
 ---
 
-Hi, there! I recently learned about C++ Sanitizers. That's an amazing concept.
-C++ Sanitizers are recently added in Clang and GCC compilers for runtime code analysis.
-Sanitizers detect errors that are usually not detected during compile time.
+Hi, there! We know C++ allows us to write fast code,
+but unfortunately, they are less safer in some cases.
+They don't provide out-of-bound, overflow, memory checks, etc.
+It became hard to catch these errors. One easy way to catch these
+errors is to run your program through various sanitizers provided
+by the compilers. Sanitizers were recently added in Clang/LLVM
+and GCC compilers for runtime code analysis.
+They detect errors that cannot be seen (easily) during compile time.
+
 In this blog, I'll share some basic details about Sanitizers in C++.
 I'll cover AddressSanitizer, MemorySanitizer, and UndefinedBehaviorSanitizer.
 
 ### AddressSanitzer
-Also called as ASan. It checks for memory addresses that are out of bounds in C++.
-It finds heap-, stack-, global- buffer overflow, initialization order bugs, memory leaks,
+Also called as ASan. It checks for memory addresses that are out of bounds in C++,
+finds heap-, stack-, global- buffer overflow, initialization order bugs, memory leaks,
 uses after return, scope, etc. Let's take an example:
 ```cpp
 #include <iostream>
@@ -26,6 +32,7 @@ uses after return, scope, etc. Let's take an example:
 
 int main() {
     const char *names[] = {"khushi", "simmi"};
+    // trying to access out-of-bound memory
     std::string last_arg = names[3];
     return last_arg.size();
 }
@@ -100,6 +107,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ==12011==ABORTING
 ```
 ***Note 1***: You can get another check by adding `-g` in the command line for more description.
+
 ***Note 2***: Clang will throw an error even if you don't turn on the warnings check-in command.
 
 I recommend the viewers change the check-in commands in GCC and Clang to see the
@@ -120,6 +128,7 @@ void set_val(bool &b, const int val) {
 
 int main(const int argc, const char *[]) {
     bool b;
+    // b is not initialized anywhere
     set_val(b, argc);
     if (b) {
         std::cout << "value set\n";
@@ -132,30 +141,33 @@ g++ memory.cpp -Wall -Wextra
 ```
 Then execute the code using `./a.out`. Or try compiling using Clang:
 ```cpp
-clang memory.cpp -Wall -Wextra
+clang memory.cpp -Wall -Wextra -lstdc++
 ```
+***Note 3***: We will need to link explicitly with `-lstdc++` otherwise it'll throw a linker error.
+Refer [stack-overflow](https://stackoverflow.com/questions/28236870/error-undefined-reference-to-stdcout).
+
 The code again runs completely fine. Let's try adding another check using the Clang compiler. Use:
 ```
-clang memory.cpp -Wall -Wextra -fsanitize=memory
+clang memory.cpp -Wall -Wextra -Werror -lstdc++ -fsanitize=memory
 ```
-***Note 3***: Currently, GCC does not support the MemorySanitizer.
+***Note 4***: Currently, GCC does not support the MemorySanitizer.
 
 Coming back to the result part, we caught a similar issue as in AddressSanitizer.
-As shown below, Clang throws a linker error, and the program gets terminated.
+As shown below, Clang throws a unitialized value error, and the program gets terminated.
 ```cpp
-/usr/bin/ld: /tmp/2-a58743.o: in function `main':
-2.cpp:(.text+0x1c0): undefined reference to `std::cout'
-/usr/bin/ld: 2.cpp:(.text+0x1d3): undefined reference to `std::basic_ostream<char, std::char_traits<char> >& std::operator<< <std::char_traits<char> >(std::basic_ostream<char, std::char_traits<char> >&, char const*)'
-/usr/bin/ld: /tmp/2-a58743.o: in function `__cxx_global_var_init':
-2.cpp:(.text.startup+0xa): undefined reference to `std::ios_base::Init::~Init()'
-/usr/bin/ld: 2.cpp:(.text.startup+0x2f): undefined reference to `std::ios_base::Init::Init()'
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
+==19215==WARNING: MemorySanitizer: use-of-uninitialized-value
+    #0 0x495186 in main (/home/khushi/Documents/cpp_practice/a.out+0x495186)
+    #1 0x7f6dc54a9082 in __libc_start_main /build/glibc-SzIz7B/glibc-2.31/csu/../csu/libc-start.c:308:16
+    #2 0x41c33d in _start (/home/khushi/Documents/cpp_practice/a.out+0x41c33d)
+
+SUMMARY: MemorySanitizer: use-of-uninitialized-value (/home/khushi/Documents/cpp_practice/a.out+0x495186) in main
+Exiting
 ```
-***Note 4***: To track the location of initialized values we used in code, use:
+***Note 5***: To track the location of initialized values we used in code, use:
 ```cpp
 clang memory.cpp -Wall -Wextra -fsanitize-memory-track-origins
 ```
-***Note 5***: To get any stack traces, add `-fno-omit-frame-pointer`.
+***Note 6***: To get any stack traces, add `-fno-omit-frame-pointer`.
 
 TODO: read about Valgrind and benchmark it.
 
@@ -170,6 +182,8 @@ to or from floating-point types, which usually cause overflow, etc. Let's take a
 
 int main() {
     float x{-NAN};
+    // when x = -nan, ::abs encounters integer overflow
+    // because it implicitly dispatches to the int version of abs
     std::cout << x << "\n";
     std::cout << "abs:" << ::abs(x) << "\n";
     return 0;
@@ -202,6 +216,7 @@ This post taught us the essential details about Address, Memory, and UndefinedBe
 Hope you enjoyed reading it!
 
 Before ending this post, I want to devote my vote of appreciation to
+Kshitij Kalambarkar for providing helpful comments by reviewing the blog,
 Janson Turner for his informative [video on C++ Sanitizers](https://www.youtube.com/watch?v=MB6NPkB4YVs),
 Kshitij Kalambarkar & Sanchit Jain for explanatory comments on [Github PR](https://github.com/pytorch/pytorch/commit/dfd2edc025b284abc6972bdcfaa9f4f7b8808036),
 and Google team for descriptive [repository on GitHub](https://github.com/google/sanitizers) about sanitizers.
