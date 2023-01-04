@@ -11,13 +11,14 @@ redirect_from:
 ---
 
 Hi, there! We know C++ allows us to write fast code,
-but unfortunately, they are less safer in some cases.
-They don't provide out-of-bound, overflow, memory checks, etc.
+but unfortunately, they are sometimes less safer.
+Its containers and array accesses are really fast,
+but they don't provide out-of-bound, overflow, memory checks, etc.
 It became hard to catch these errors. One easy way to catch these
 errors is to run your program through various sanitizers provided
-by the compilers. Sanitizers were recently added in Clang/LLVM
-and GCC compilers for runtime code analysis.
-They detect errors that cannot be seen (easily) during compile time.
+by the compilers. They detect errors that cannot be seen (easily)
+during compile time. Sanitizers were added in Clang/LLVM and
+GCC compilers for runtime code analysis.
 
 In this blog, I'll share some basic details about Sanitizers in C++.
 I'll cover AddressSanitizer, MemorySanitizer, and UndefinedBehaviorSanitizer.
