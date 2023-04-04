@@ -21,8 +21,8 @@ permalink: /posts-by-categories/
       </div>
 
     </small></h2>
-      {% assign sorted_categories = site.categories | sort: 'last_modified_at' | reverse %}
-      {% for category in site.categories %}
+      {% assign sorted_categories = site.categories | sort %}
+      {% for category in sorted_categories %}
       <div class="col-md-12 content-panel articles">
         <h2 id="{{ category | first }}-ref">{{ category | first }}</h2>
         <ul>
