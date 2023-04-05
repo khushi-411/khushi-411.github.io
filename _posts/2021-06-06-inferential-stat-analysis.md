@@ -2,7 +2,7 @@
 layout: post
 title: Inferential Statistical Analysis
 date: 2021-06-06
-category: datascience
+category: Data Science
 tags: 
 - data-science
 redirect_from:

@@ -2,7 +2,7 @@
 layout: post
 title: TensorIterator-Internals
 date: 2022-02-13
-category: pytorch
+category: PyTorch
 tags: 
 - pytorch
 redirect_from:

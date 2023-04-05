@@ -2,7 +2,7 @@
 layout: post
 title: Descriptive Statistical Analysis
 date: 2021-06-05
-category: datascience
+category: Data Science
 tags: 
 - data-science
 redirect_from:

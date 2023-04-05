@@ -2,7 +2,7 @@
 layout: post
 title: C++ Sanitizers
 date: 2022-12-26
-category: cpp
+category: C++
 tags:
 - cpp
 redirect_from:

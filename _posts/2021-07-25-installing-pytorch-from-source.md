@@ -2,7 +2,7 @@
 layout: post
 title: Installing PyTorch from Source
 date: 2021-07-25
-category: pytorch
+category: PyTorch
 tags: 
 - pytorch
 redirect_from:

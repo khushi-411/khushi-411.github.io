@@ -2,7 +2,7 @@
 layout: post
 title: Setting up Microsoft Visual Studio for PyTorch C++ API
 date: 2021-07-24
-category: pytorch
+category: PyTorch
 tags: 
 - pytorch
 redirect_from:
