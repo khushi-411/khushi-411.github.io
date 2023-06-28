@@ -91,7 +91,7 @@ class Plus {
 auto plus = Plus(1);
 assert(plus(42) == 43);
 ```
-Lambdas reduce the boilerplate!
+**Lambdas reduce the boilerplate!**
 ```cpp
 auto plus = [value=1](int x) { return x + value; };
 ```
@@ -109,7 +109,8 @@ bool contains_title(const std::vector<Book>& shelf, std::string title) {
 ~**TODO**: What is passed in the parameters block? here: `()`~:
 parameters that the lambda function will accept.
 
-Here, the lambda, [t=title], will make a copy of the string.
+### Capturing by Reference
+In the above example, [t=title], will make a copy of the string.
 It's called a `copy constructor`.
 
 What if we don't want to make a copy? We pass the reference value.
@@ -142,7 +143,7 @@ auto has_title_t = [t=std::move(title)](const Book& b) {
 ```
 `[t=std::move(title)]` creates a `std::string t` and calls the move constructor to initialize it.
 
-Shorthands of lambda
+### Shorthands of lambda
 - [t=title] () { decltype(title) ... use(t); }
 - [title] () { decltype(title) ... use(title); }
 - [&t=title] () { use(t); }
@@ -152,7 +153,7 @@ Shorthands of lambda
     - [&] () { use(title); } : Capture only what is needed, by reference  // Most useful
     - Globals and statics are not captured
  
-More features on lambda:
+### More features on lambda
 1. lambda, which doesn't capture anything. It does not capture
 any variable inside it; it operates solely on parameters and does not rely on external states.
 ```cpp
@@ -186,7 +187,8 @@ increment();
 // output: count: 2
 std::cout << "count: " << count << std::endl;
 ```
---- 
+
+### How to mutate Lambdas?
 
 Pre-lambda mutable state (wrong!)
 ```cpp
@@ -220,6 +222,8 @@ Now, how to remove the const? Therefore we need to `mutate`.
 - `mutable` does not affect the constness of the data members themselves.
 - It just affects the const qualification of the lambda type's operator.
 
+### Generic Lambdas
+
 **Lambdas + Templates = Generic Lambdas**
 
 Consider the following class member function templates
@@ -243,6 +247,33 @@ auto plus = [value=1](auto x) { return x + value; };
 `auto` has something to do with type deduction... type inference...
 This `auto` is different from auto in a normal case. This is actually a template.
 
+#### Naming the parameter type in generic lambdas
+- How to name template `T` in generic lambda? replace it with `auto`?
+Consider the following code:
+```cpp
+auto plus = [](auto... args) {
+    return sum(args...);
+};
+auto times = [](auto&&... args) {
+    return product(std::forward<???>(args)...);
+};
+```
+Possible solutions will be:
+```cpp
+auto one = [](auto&&... args) {
+    return product(std::forward<decltype(args)>(args)...);
+};
+auto two = []<class... Ts>(Ts&&... args) {
+    return product(std::forward<Ts>(args)...);
+};
+auto genericLambda = [](auto x) {
+    using T = decltype(x);
+    // code here
+};
+```
+
+### Variadic Lambdas
+
 Variadic function templates
 ```cpp
 class Plus {
@@ -264,6 +295,8 @@ auto plus = [value=1](auto... as) {
 };
 assert(plus(42, 3.14, 1) == 47.14);
 ```
+
+### Using `this` as the lambda objects
 
 We can explicitly access the lambda as `this->t`.
 This works the same way on lambda. Not really!
@@ -294,30 +327,7 @@ We can capture `this` in lambdas in the following ways:
 - Capture `*this by move` has no shorthand.
     - [obj=std::move(*this)] () { obj.work(x); }
 
-Naming the parameter type in generic lambdas
-- How to name template `T` in generic lambda? replace it with `auto`?
-Consider the following code:
-```cpp
-auto plus = [](auto... args) {
-    return sum(args...);
-};
-auto times = [](auto&&... args) {
-    return product(std::forward<???>(args)...);
-};
-```
-Possible solutions will be:
-```cpp
-auto one = [](auto&&... args) {
-    return product(std::forward<decltype(args)>(args)...);
-};
-auto two = []<class... Ts>(Ts&&... args) {
-    return product(std::forward<Ts>(args)...);
-};
-auto genericLambda = [](auto x) {
-    using T = decltype(x);
-    // code here
-};
-```
+### std::function with lambdas
 
 **TODO** the below topics with examples
 - **`std::function`** or lambdas? Both are of nearly the same kind.
@@ -338,6 +348,7 @@ How to fix it? Place the lambda on the heap, then share
 access to it from all the instances of the `std::function`.
 Or use any function type.
 
+---
 
 Thank you very much for being with me throughout the posts.
 If you want to share some cool stuff or have questions,
