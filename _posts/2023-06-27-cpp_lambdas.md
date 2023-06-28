@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Lamdbas from Scratch
+title: Lambdas from Scratch
 date: 2023-06-27
 category: C++
 tags:
@@ -315,7 +315,7 @@ class Widget {
     }
 };
 ```
-If `this` here means the lambda object, we wouldn't be able to compile.
+If `this` here means the lambda object, we couldn't compile it.
 We can capture `this` in lambdas in the following ways:
 - [=] () { this->work(); }
 - [this] () { this->work(); }
@@ -331,7 +331,7 @@ We can capture `this` in lambdas in the following ways:
 
 **TODO** the below topics with examples
 - **`std::function`** or lambdas? Both are of nearly the same kind.
-- How do write functions that accept lambdas as arguments?
+- How do you write functions that accept lambdas as arguments?
   - STL way
 - How to pass lambda across an ABI boundary?
 
@@ -344,7 +344,7 @@ auto lamb3 = lamb;  // error
 ```
 There is no copy constructor for lambda. 
 
-How to fix it? Place the lambda on the heap, then share
+How do you think I could fix it? Place the lambda on the heap, then share
 access to it from all the instances of the `std::function`.
 Or use any function type.
 
