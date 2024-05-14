@@ -77,5 +77,39 @@ row-major 2-dimensional array:
 
 <img alt="Linearize multi-dimensional arrays" src="/assets/CUDA/linearize.png" class="center" >
 
+Now, let's write a kernel code for the color to the grey-scale conversion
+of a 2-dimensional image. It uses the following equation:
+```math
+L = 0.21*r + 0.72*g + 0.07*b
+```
+The CUDA kernel code executed by each thread is given by:
+```cuda
+__global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
+                                                 unsigned char* Pin, int width,
+                                                 int height) {
+    int col = threadIdx.x + blockIdx.x * blockDim.x;
+    int row = threadIdx.y + blockIdx.y * blockDim.y;
+
+    // to make sure threads with both row and column are within range
+    if (col < width && row < height) {
+        // we linearize in CUDA kernel (due to due of a flat memory space
+        // in modern computers
+        // 1D equivalent index for an element of M of row j and column i
+        // is j * 4 + i; where 4 is width of matrix (4 x 4)
+        int gray offset = row * width + col;
+
+        // RGB image having CHANNELS times more columns than gray-scale
+        int rgbOffset = grayOffset * CHANNELS;
+        unsigned char r = Pin[rgbOffset];      // red value
+        unsigned char g = Pin[rgbOffset + 1];  // green value
+        unsigned char b = Pin[rgbOffset + 2];  // blue value
+
+        // To convert pixel into gray-scale
+        Pout[grayOffset] =
+            static_cast<unsigned char>(0.21f * r + 0.71f * g + 0.07f * b);
+    }
+}
+```
+
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
