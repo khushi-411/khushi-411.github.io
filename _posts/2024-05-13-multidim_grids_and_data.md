@@ -149,8 +149,9 @@ __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
 Consider a matrix `M` of shape `i x j` and a matrix `N` of
 shape `j x k`, such that multiplication of the matrix produces another
 matrix `P`, of shape `i x k`. Mathematically, it is given by:
+Here, k = 0, 1, 2 ..., j-1.
 ```math
-P<sub>(row, col)</sub> = \sum<sub>k=0</sub><sup>j-1</sup> M<sub>(row, k)</sub> \cdot N<sub>(k, col)</sub>
+P_{row, col} = \sum M_{row, k} * N_{k, col}
 ```
 
 <img alt="Matrix Multiplication" src="/assets/CUDA/matrix_multiplication.png" class="center" >
