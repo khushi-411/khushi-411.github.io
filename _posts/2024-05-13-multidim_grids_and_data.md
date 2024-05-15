@@ -115,7 +115,7 @@ __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
 Mathematically, an image blurring function calculates the value of an
 output image pixel as a weighted sum of a patch of pixels encompassing
 the pixel in the input image. In the code below, we'll take a simple
-average value of the $N x N$ patch of pixels of the image. For this kernel,
+average value of the **N x N** patch of pixels of the image. For this kernel,
 the thread-to-output data mapping remains the same.
 ```cuda
 __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
@@ -161,6 +161,9 @@ $$
 The matrix multiplication kernel below is the one-to-one mapping;
 the row and column thread indices are also
 the row and column indices for their output elements.
+Note that the kth element of
+the rowth row is at `M[row * Width + k]`.
+And the kth element of the colth col is at `N[k * Width + col]`.
 ```cuda
 __global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
     int col = threadIdx.x + blockIdx.x * blockDim.x;
@@ -175,17 +178,27 @@ __global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
     }
 }
 ```
-Let's demonstrate the work done by each thread. We see each P_{row, col}
+Let's demonstrate the work done by each thread. We see each P<sub>(row, col)</sub>
 is calculated as an inner product of the rowth row of M and
-colth col of N in the for-loop. The kth element of
-the rowth row is at `M[row * Width + k]`.
-And the kth element of the colth col is at `N[k * Width + col]`.
+colth col of N in the for-loop.
 For a matrix multiplication of two 4092<sup>2</sup> matrices followed by an
-addition of a 4092<sup>2</sup> matrix. Note that this example is taken from
-"How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog"<sup>[2](#link2)</sup>.
+addition of a 4092<sup>2</sup> matrix (for GEMM),
+the total FLOPS, total data read, and the actual data stored is given by:
 - Total FLOPS: 2*4092<sup>3</sup> + 4092<sup>2</sup> = 137 GFLOPS
 - Total data to read (minimum!): 3 * 4092<sup>2</sup> * 4B = 201MB
 - Total data to store: 4092<sup>2</sup> * 4B = 67MB
+
+This example is taken from
+"How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog"<sup>[2](#link2)</sup>.
+
+### **Conclusion**
+That's all for this blog. We started our journey by understanding the three-level
+thread hierarchy, the memory layout of the dynamically allocated arrays, and their
+rearrangement into 1D arrays while computing. We then demonstrated the mechanics of
+multi-dimensional array processing via various examples like color-to-gray-scale conversion,
+image blurring, and the naive implementation of matrix multiplication. In the upcoming series,
+learn about the basics of computer architecture and scheduling of the algorithms
+to optimize our naive matrix multiplication kernel implementation.
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
