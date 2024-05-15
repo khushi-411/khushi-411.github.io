@@ -77,11 +77,9 @@ row-major 2-dimensional array:
 
 Now, let's write a kernel code for the color to the gray-scale conversion
 of a 2-dimensional image. It uses the following equation:
-
-$$
+```math
 L = 0.21*r + 0.72*g + 0.07*b
-$$
-
+```
 The CUDA kernel code executed by each thread is given by:
 ```cuda
 __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
@@ -151,10 +149,9 @@ __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
 Consider a matrix `M` of shape `i x j` and a matrix `N` of
 shape `j x k`, such that multiplication of the matrix produces another
 matrix `P`, of shape `i x k`. Mathematically, it is given by:
-
-$$
-P_{\text{row}, \text{col}} = \sum_{k=0}^{j-1} M_{\text{row}, k} \cdot N_{k, \text{col}}
-$$
+```math
+P<sub>(row, col)</sub> = \sum<sub>k=0</sub><sup>j-1</sup> M<sub>(row, k)</sub> \cdot N<sub>(k, col)</sub>
+```
 
 <img alt="Matrix Multiplication" src="/assets/CUDA/matrix_multiplication.png" class="center" >
 
