@@ -10,8 +10,6 @@ redirect_from:
 - /multidim_grids_and_data.html
 ---
 
-## Multidimensional Grid and Data
-
 ### **Introduction**
 Hi there! The blog posts aim to share how the blocks and threads
 are organized and how they are used to process multidimensional data.
@@ -25,7 +23,7 @@ Multidimensional Grids and Data, of the incredible book
 "Programming Massively Parallel Processors:
 A Hands-on Approach<sup>[1](#link1)</sup>" by [Wen-mei W. Hwu](https://scholar.google.com/citations?user=ohjQPx8AAAAJ&hl=en), [David B. Kirk](https://scholar.google.com/citations?user=fMbArPwAAAAJ&hl=en), and [Izzat El Hajj](https://scholar.google.com/citations?user=_VVw504AAAAJ&hl=en).
 
-### Multidimensional Grid Organization
+### **Multidimensional Grid Organization**
 In CUDA, computation is performed in a three-level hierarchy.
 As soon as the user launches the kernel in device memory, a grid is
 executed. A grid is a 3D array of blocks. A block is a 3D array of
@@ -49,17 +47,17 @@ kernelLaunch<<<dimGrid, dimBlock>>>(...);
 
 <img alt="Multidimensional Grids and Blocks" src="/assets/CUDA/kernel_launch.png" class="center" >
 
-#### Notes:
+#### **Notes**
 - If we want to work on 1D grids and blocks, we can call kernels with
 integer values instead of declaring them explicitly.
-- Allowed values of `gridDim.x` range from $1$ to $2^{31} - 1$.
-And those of `gridDim.y` and `gridDim.z` range from $1$ to $2^6 - 1$
-- The total size of the block in the current CUDA system is limited to $1024$ threads.
+- Allowed values of `gridDim.x` range from 1 to 2^{31} - 1.
+And those of `gridDim.y` and `gridDim.z` range from 1 to 2^6 - 1
+- The total size of the block in the current CUDA system is limited to 1024 threads.
 - All threads in a block have the same `blockIdx` values,
 and all blocks in a grid have the same `gridIdx` values.
-- Range of `blockIdx.x`: $0$ to $gridDim.x - 1$
+- Range of `blockIdx.x`: 0 to gridDim.x - 1
 
-### Color to Gray Scale Conversion
+### **Color to Gray Scale Conversion**
 Images are a 2-dimensional array of pixels. To find the co-ordinate
 of a thread assigned to process the pixel is given by:
 ```cuda
@@ -77,7 +75,7 @@ row-major 2-dimensional array:
 
 <img alt="Linearize multi-dimensional arrays" src="/assets/CUDA/linearize.png" class="center" >
 
-Now, let's write a kernel code for the color to the grey-scale conversion
+Now, let's write a kernel code for the color to the gray-scale conversion
 of a 2-dimensional image. It uses the following equation:
 ```math
 L = 0.21*r + 0.72*g + 0.07*b
@@ -110,6 +108,72 @@ __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
     }
 }
 ```
+
+### **Image Blur**
+Mathematically, an image blurring function calculates the value of an
+output image pixel as a weighted sum of a patch of pixels encompassing
+the pixel in the input image. In the code below, we'll take a simple
+average value of the $N x N$ patch of pixels of the image. For this kernel,
+the thread-to-output data mapping remains the same.
+```cuda
+__global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
+                           int h) {
+    int col = threadIdx.x + blockIdx.x * blockDim.x;
+    int row = threadIdx.y + blockIdx.y * blockDim.y;
+
+    if (col < w && row < h) {
+        int pixVal = 0;
+        int pixels = 0;
+
+        // BLUR_SIZE: gives the number of pixels around each side of a patch
+        // these for-loops for the patch dimensions
+        for (int blurRow = -BLUR_SIZE; blurRow < BLUR_SIZE + 1; ++blurRow) {
+            for (int blurCol = -BLUR_SIZE; blurCol < BLUR_SIZE + 1; ++blurCol) {
+                int curRow = row + blurRow;
+                int curCol = col + blurCol;
+
+                if (curRow >= 0 && curRow < h && curCol >= 0 && curCol < w) {
+                    // uses the linearized index and then accumulates the pixel value
+                    pixVal += in[curRow * w + curCol];
+                    ++pixels;
+                }
+            }
+        }
+        // calculates the average of pixel values
+        out[row * w + col] = (unsigned char)(pixVal / pixels);
+    }
+}
+```
+
+### **Matrix Multiplication: Naive Implementation**
+Consider a matrix `M` of shape `i x j` and a matrix `N` of
+shape `j x k`, such that multiplication of the matrix produces another
+matrix `P`, of shape `i x k`. Mathematically, it is given by:
+```math
+P_{row, col} = \sum M_{row, k} * N_{k, col} \ \ \ \ \  for \ k = 0, 1, 2 ... j-1
+```
+The matrix multiplication kernel below is the one-to-one mapping;
+the row and column thread indices are also
+the row and column indices for their output elements.
+```cuda
+__global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
+    int col = threadIdx.x + blockIdx.x * blockDim.x;
+    int row = threadIdx.y + blockIdx.y * blockDim.y;
+
+    if ((row < width) && (col < width)) {
+        float Pvalue = 0;
+        for (int k = 0; k < width; k++) {
+            Pvalue += M[row * width + k] * N[k * width + col];
+        }
+        P[row * width + col] = Pvalue;
+    }
+}
+```
+Let's demonstrate the work done by each thread. We see each P_{row, col}
+is calculated as an inner product of rowth row of M and
+colth col of N in the for-loop. The kth element of
+the rowth row is at `M[row * Width + k]`.
+And the kth element of the colth col is at `N[k * Width + col]`.
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
