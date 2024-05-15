@@ -152,6 +152,9 @@ matrix `P`, of shape `i x k`. Mathematically, it is given by:
 ```math
 P_{row, col} = \sum M_{row, k} * N_{k, col} \ \ \ \ \  for \ k = 0, 1, 2 ... j-1
 ```
+
+<img alt="Matrix Multiplication" src="/assets/CUDA/matrix_multiplication.png" class="center" >
+
 The matrix multiplication kernel below is the one-to-one mapping;
 the row and column thread indices are also
 the row and column indices for their output elements.
@@ -170,10 +173,18 @@ __global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
 }
 ```
 Let's demonstrate the work done by each thread. We see each P_{row, col}
-is calculated as an inner product of rowth row of M and
+is calculated as an inner product of the rowth row of M and
 colth col of N in the for-loop. The kth element of
 the rowth row is at `M[row * Width + k]`.
 And the kth element of the colth col is at `N[k * Width + col]`.
+For a matrix multiplication of two 4092^2 matrices followed by an
+addition of a 4092^2 matrix. Note that this example is taken from
+"How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog"<sup>[2](#link2)</sup>.
+- Total FLOPS: 2*4092^3 + 4092^2 = 137 GFLOPS
+- Total data to read (minimum!): 3 * 4092^2 * 4B = 201MB
+- Total data to store: 4092^2 * 4B = 67MB
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
+<a id="link2">2</a>. [How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog](https://siboehm.com/articles/22/CUDA-MMM); Dec 2022
+<a id="link3">3</a>. [Recap Ch. 1-3 from the PMPP book YouTube](https://youtu.be/NQ-0D5Ti2dc) by [Andreas Koepf](https://twitter.com/neurosp1ke)
