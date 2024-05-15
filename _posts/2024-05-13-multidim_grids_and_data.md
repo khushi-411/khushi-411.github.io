@@ -90,8 +90,8 @@ __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
 
     // to make sure threads with both row and column are within range
     if (col < width && row < height) {
-        // we linearize in CUDA kernel (due to due of a flat memory space
-        // in modern computers
+        // we linearize the memory layout of the data (due to a flat memory
+        // space in modern computers)
         // 1D equivalent index for an element of M of row j and column i
         // is j * 4 + i; where 4 is width of matrix (4 x 4)
         int gray offset = row * width + col;
@@ -195,7 +195,7 @@ thread hierarchy, the memory layout of the dynamically allocated arrays, and the
 rearrangement into 1D arrays while computing. We then demonstrated the mechanics of
 multi-dimensional array processing via various examples like color-to-gray-scale conversion,
 image blurring, and the naive implementation of matrix multiplication. In the upcoming series,
-learn about the basics of computer architecture and scheduling of the algorithms
+learn about the basics of computing architecture and scheduling of the algorithms
 to optimize our naive matrix multiplication kernel implementation.
 
 ### **Resources & References**
