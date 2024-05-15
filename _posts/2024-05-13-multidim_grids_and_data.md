@@ -50,8 +50,8 @@ kernelLaunch<<<dimGrid, dimBlock>>>(...);
 #### **Notes**
 - If we want to work on 1D grids and blocks, we can call kernels with
 integer values instead of declaring them explicitly.
-- Allowed values of `gridDim.x` range from 1 to 2^{31} - 1.
-And those of `gridDim.y` and `gridDim.z` range from 1 to 2^6 - 1
+- Allowed values of `gridDim.x` range from 1 to 2<sup>31</sup> - 1.
+And those of `gridDim.y` and `gridDim.z` range from 1 to 2<sup>6</sup> - 1
 - The total size of the block in the current CUDA system is limited to 1024 threads.
 - All threads in a block have the same `blockIdx` values,
 and all blocks in a grid have the same `gridIdx` values.
@@ -77,9 +77,11 @@ row-major 2-dimensional array:
 
 Now, let's write a kernel code for the color to the gray-scale conversion
 of a 2-dimensional image. It uses the following equation:
-```math
+
+$$
 L = 0.21*r + 0.72*g + 0.07*b
-```
+$$
+
 The CUDA kernel code executed by each thread is given by:
 ```cuda
 __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
@@ -113,7 +115,7 @@ __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
 Mathematically, an image blurring function calculates the value of an
 output image pixel as a weighted sum of a patch of pixels encompassing
 the pixel in the input image. In the code below, we'll take a simple
-average value of the $N x N$ patch of pixels of the image. For this kernel,
+average value of the **N x N** patch of pixels of the image. For this kernel,
 the thread-to-output data mapping remains the same.
 ```cuda
 __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
@@ -149,15 +151,19 @@ __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
 Consider a matrix `M` of shape `i x j` and a matrix `N` of
 shape `j x k`, such that multiplication of the matrix produces another
 matrix `P`, of shape `i x k`. Mathematically, it is given by:
-```math
-P_{row, col} = \sum M_{row, k} * N_{k, col} \ \ \ \ \  for \ k = 0, 1, 2 ... j-1
-```
+
+$$
+P_{\text{row}, \text{col}} = \sum_{k=0}^{j-1} M_{\text{row}, k} \cdot N_{k, \text{col}}
+$$
 
 <img alt="Matrix Multiplication" src="/assets/CUDA/matrix_multiplication.png" class="center" >
 
 The matrix multiplication kernel below is the one-to-one mapping;
 the row and column thread indices are also
 the row and column indices for their output elements.
+Note that the kth element of
+the rowth row is at `M[row * Width + k]`.
+And the kth element of the colth col is at `N[k * Width + col]`.
 ```cuda
 __global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
     int col = threadIdx.x + blockIdx.x * blockDim.x;
@@ -172,19 +178,29 @@ __global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
     }
 }
 ```
-Let's demonstrate the work done by each thread. We see each P_{row, col}
+Let's demonstrate the work done by each thread. We see each P<sub>(row, col)</sub>
 is calculated as an inner product of the rowth row of M and
-colth col of N in the for-loop. The kth element of
-the rowth row is at `M[row * Width + k]`.
-And the kth element of the colth col is at `N[k * Width + col]`.
-For a matrix multiplication of two 4092^2 matrices followed by an
-addition of a 4092^2 matrix. Note that this example is taken from
+colth col of N in the for-loop.
+For a matrix multiplication of two 4092<sup>2</sup> matrices followed by an
+addition of a 4092<sup>2</sup> matrix (for GEMM),
+the total FLOPS, total data read, and the actual data stored is given by:
+- Total FLOPS: 2*4092<sup>3</sup> + 4092<sup>2</sup> = 137 GFLOPS
+- Total data to read (minimum!): 3 * 4092<sup>2</sup> * 4B = 201MB
+- Total data to store: 4092<sup>2</sup> * 4B = 67MB
+
+This example is taken from
 "How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog"<sup>[2](#link2)</sup>.
-- Total FLOPS: 2*4092^3 + 4092^2 = 137 GFLOPS
-- Total data to read (minimum!): 3 * 4092^2 * 4B = 201MB
-- Total data to store: 4092^2 * 4B = 67MB
+
+### **Conclusion**
+That's all for this blog. We started our journey by understanding the three-level
+thread hierarchy, the memory layout of the dynamically allocated arrays, and their
+rearrangement into 1D arrays while computing. We then demonstrated the mechanics of
+multi-dimensional array processing via various examples like color-to-gray-scale conversion,
+image blurring, and the naive implementation of matrix multiplication. In the upcoming series,
+learn about the basics of computer architecture and scheduling of the algorithms
+to optimize our naive matrix multiplication kernel implementation.
 
 ### **Resources & References**
-<a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
-<a id="link2">2</a>. [How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog](https://siboehm.com/articles/22/CUDA-MMM); Dec 2022
-<a id="link3">3</a>. [Recap Ch. 1-3 from the PMPP book YouTube](https://youtu.be/NQ-0D5Ti2dc) by [Andreas Koepf](https://twitter.com/neurosp1ke)
+<a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
+<a id="link2">2</a>. [How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog](https://siboehm.com/articles/22/CUDA-MMM); Dec 2022 \
+<a id="link3">3</a>. [Recap Ch. 1-3 from the PMPP book YouTube](https://youtu.be/NQ-0D5Ti2dc) by [Andreas Koepf](https://twitter.com/neurosp1ke); Dec 2024
