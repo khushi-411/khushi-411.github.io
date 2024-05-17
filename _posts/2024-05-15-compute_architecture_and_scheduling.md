@@ -98,22 +98,20 @@ support their execution. This prevents resource underutilization
 and preserves its limitations. Let's take an example:
 
 Example 1: maximum occupancy
-> block_size = 64;
-
-> number of blocks per SM = 32;
-
-> number of threads assigned to each SM = 64 x 32 = 2048
-
-> occupancy = number of threads assigned / maximum number it supports = 2048 / 2048 = 1
+```cpp
+block_size = 64;
+number of blocks per SM = 32;
+number of threads assigned to each SM = 64 x 32 = 2048
+occupancy = number of threads assigned / maximum number it supports = 2048 / 2048 = 1
+```
 
 Example 2
-> block_size = 32
-
-> number of blocks = 32
-
-> number of threads in each SM = 32 x 32 = 1024
-
-> occupancy = number of threads assigned / maximum number it supports = 1024 / 2048 = 0.5
+```cpp
+block_size = 32
+number of blocks = 32
+number of threads in each SM = 32 x 32 = 1024
+occupancy = number of threads assigned / maximum number it supports = 1024 / 2048 = 0.5
+```
 
 When the maximum number of threads per block is not divisible
 by the block size, occupancy is negatively affected.
