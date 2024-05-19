@@ -165,7 +165,9 @@ subsets of matrix M and N (by dividing them into tiles)
 into the shared memory before performing
 any calculations, then calculate the products and additions.
 
-The figure below shows the activities of
+<img alt="Execution phases of a Tiled Matrix Multiplication" src="/assets/CUDA/tiled_mm.png" class="center" >
+
+The above image from the book shows the activities of
 threads in block_{0,0}. The shared memory elements
 for arrays M and N are called Mds and Nds.
 These Mds and Nds remain in the shared memory and
@@ -176,6 +178,8 @@ of data from the input matrix multiplication,
 known as **locality**.
 
 ### **Tiled Matrix Multiplication Kernel**
+<img alt="Tiled Matrix Multiplication" src="/assets/CUDA/tiled_mm_kernel.png" class="center" >
+
 As shown below:
 ```cuda
 __global__ void matrixMulKernel(float* M, float* N, float* P, int Width) {
