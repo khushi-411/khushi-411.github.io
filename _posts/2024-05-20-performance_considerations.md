@@ -78,6 +78,29 @@ unfavourable access pattern in the shared memory for faster access latency.
 An optimization technique for a matrix-matrix
 multiplication when the second input matrix
 is in the column-major layout is known as **corner turning**.
+To solve this problem, where consecutive threads
+load nonconsecutive locations in the memory, resulting
+in uncoalesced memory accesses, we assign consecutive threads
+to load consecutive elements of the matrix (figure shown below).
+This ensures memory accesses are coalesced.
+
+Matrix multiplication without corner turning.
+<img alt="Uncoalesced" src="/assets/CUDA/uncoalesced.png" class="center" >
+
+Applying corner turning to coalesce accesses to matrix B (column-major layout).
+<img alt="Coalesced" src="/assets/CUDA/coalesced.png" class="center" >
+
+### **Hiding Memory Latency**
+DRAM systems have two levels of parallel organizations:
+banks and channels. Each channel is a memory controller
+that connects DRAM banks to the processor. A bus connects
+the banks to the channels. A bus's data transfer bandwidth
+is determined by its width and clock frequency.
+The image below shows the data transfer timing
+when a single bank and when two (or multiple) banks are connected
+to a channel and how to hide its latency.
+
+<img alt="Banking improves data transfers." src="/assets/CUDA/banking.png" class="center" >
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
