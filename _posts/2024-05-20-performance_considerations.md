@@ -102,5 +102,91 @@ to a channel and how to hide its latency.
 
 <img alt="Banking improves data transfers." src="/assets/CUDA/banking.png" class="center" >
 
+### **Thread Coarsening**
+Until now, we have read about each thread executing
+the smallest unit of data and mapping each output
+element. However, this sometimes leads to redundant
+data loading by different threads, synchronization overhead,
+and other problems, especially when hardware
+serializes the work. To serialize the work, we can
+assign each thread multiple units of work.
+This process is known as **thread coarsening**.
+
+<img alt="Thread Coarsening" src="/assets/CUDA/thread_coarsening.png" class="center" >
+
+In the figure above, we load the same input
+files of matrix M with the two different input
+tiles of matrix N, which access two horizontally
+adjacent memory of the output tiles of matrix P.
+Note that here, we have different thread blocks
+loading the same input tiles. It's the price we'll
+pay to access two output tiles in parallel with
+different thread blocks. This process will be
+efficient only if these thread blocks run in
+parallel. This depends on whether the hardware
+serializes its process or not.
+```cuda
+#define TILE_WIDTH 32
+
+// number of original units of work responsible for each coarsened thread
+#define COARSE_FACTOR 4
+
+__global__ void matrixMulKernel(float* M, float* N, float* P, int width) {
+
+    __shared__ float Mds[TILE_WIDTH][TILE_WIDTH];
+    __shared__ float Nds[TILE_WIDTH][TILE_WIDTH];
+
+    int bx = blockIdx.x;
+    int by = blockIdx.y;
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+
+    // Identify the row and column of the P element to work on
+    int row = by*TILE_WIDTH + ty;
+    int colStart = bx*TILE_WIDTH*COARSE_FACTOR + tx;
+
+    // Initialize Pvalue for all output elements
+    float Pvalue[COARSE_FACTOR];
+    for (int c = 0; c < COARSE_FACTOR; ++c) {
+        Pvalue[c] = 0.0f;
+    }
+
+    // Loop M and N to compute the P element
+    for (int ph = 0; ph < width/TILE_WIDTH; ++ph) {
+
+        // Collaborative loading of M tile into shared memory
+        Mds[ty][tx] = M[row*width + ph*TILE_WIDTH + tx];
+
+        for (int c = 0; c < COARSE_FACTOR; ++c) {
+            int col = colStart + c*TILE_WIDTH;
+
+            // Collaborative loading of N tile into shared memory
+            Nds[ty][tx] = N[(ph*TILE_WIDTH + ty)*width + col];
+            __syncthreads();
+
+            for (int k = 0; k < TILE_WIDTH; ++k) {
+                Pvalue[c] += Mds[ty][k] * Nds[k][tx];
+            }
+            __syncthreads();
+        }
+    }
+
+    for (int c = 0; c < COARSE_FACTOR; ++c) {
+        int col = colStart + c*TILE_WIDTH;
+        P[row*width + col] = Pvalue[c];
+    }
+}
+```
+This is a powerful optimization technique,
+but there are several pitfalls we should keep a note of while applying:
+- We should apply only when needed. For the cases discussed
+in the earlier blogs, we don't need it, so we didn't apply.
+- Do not apply too much thread coarsening so
+that the hardware resources become underutilized.
+- While applying thread coarsening, we should avoid
+increasing resource consumption to such an extent that it hurts the occupancy.
+
+### **A Checklist of Optimization**
+
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
