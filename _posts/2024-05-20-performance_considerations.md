@@ -187,6 +187,102 @@ that the hardware resources become underutilized.
 increasing resource consumption to such an extent that it hurts the occupancy.
 
 ### **A Checklist of Optimization**
+Copied from the book<sup>[1](#link1)</sup> (todo: update it):
+<table align="center" cellspacing="30" cellpadding="30">
+<tr>
+    <th style="text-align: center"> Optimizations </th>
+    <th style="text-align: center"> Benefit to compute cores </th>
+    <th style="text-align: center"> Benefit to memory </th>
+    <th style="text-align: center"> Strategies </th>
+  </tr>
+  <tr>
+    <td style="text-align: center"> Maximizing occupancy </td>
+    <td style="text-align: center"> More work to hide pipeline latency </td>
+    <td style="text-align: center"> More parallel memory accesses to hide DRAM latency </td>
+    <td style="text-align: center"> Tuning usage of SM
+resources such as threads
+per block, shared memory
+per block, and registers
+per thread </td>
+  </tr>
+  <tr>
+    <td style="text-align: center"> Enabling coalesced global memory accesses </td>
+    <td style="text-align: center"> Fewer pipeline
+stalls waiting for
+global memory
+accesses </td>
+    <td style="text-align: center"> Less global memory
+traffic and better
+utilization of bursts/
+cache lines </td>
+    <td style="text-align: center"> Transfer between global
+memory and shared
+memory in a coalesced
+manner and performing
+uncoalesced accesses in
+shared memory (e.g.,
+corner turning)
+Rearranging the mapping
+of threads to data
+Rearranging the layout of
+the data </td>
+  </tr>
+  <tr>
+    <td style="text-align: center"> Minimizing control divergence </td>
+    <td style="text-align: center"> High SIMD
+efficiency (fewer
+idle cores during
+SIMD execution) </td>
+    <td style="text-align: center"> - </td>
+    <td style="text-align: center"> Rearranging the mapping
+of threads to work and/or
+data
+Rearranging the layout of
+the data </td>
+  </tr>
+  <tr>
+    <td style="text-align: center"> Tiling of reused data </td>
+    <td style="text-align: center"> Fewer pipeline
+stalls waiting for
+global memory
+accesses </td>
+    <td style="text-align: center"> Less global memory
+traffic </td>
+    <td style="text-align: center"> Placing data that is reused
+within a block in shared
+memory or registers so
+that it is transferred
+between global memory
+and the SM only once </td>
+  </tr>
+  <tr>
+    <td style="text-align: center"> Privatization </td>
+    <td style="text-align: center"> Fewer pipeline
+stalls waiting for
+atomic updates </td>
+    <td style="text-align: center"> Less contention and
+serialization of
+atomic updates </td>
+    <td style="text-align: center"> Applying partial updates to
+a private copy of the data
+and then updating the
+universal copy when done </td>
+  </tr>
+  <tr>
+    <td style="text-align: center"> Thread coarsening </td>
+    <td style="text-align: center"> Less redundant
+work, divergence,
+or synchronization </td>
+    <td style="text-align: center"> Less redundant
+global memory
+traffic </td>
+    <td style="text-align: center"> Assigning multiple units of
+parallelism to each thread
+to reduce the price of
+parallelism when it is
+incurred unnecessarily </td>
+  </tr>
+</table>
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
