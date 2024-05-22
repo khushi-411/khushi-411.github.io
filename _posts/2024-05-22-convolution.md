@@ -142,10 +142,11 @@ while calculating the output element, which leads
 to reduced efficiency (we'll follow this in our
 example below).
 - Another approach is when the dimensions of the
-block are the same as that of the output element.
+block is the same as that of the output element.
 But in this case,e loading the input tile is complex
 to handle. In this case, we do not need to disable
 threads mapping output elements.
+
 ```cuda
 #define IN_TILE_DIM 32
 #define OUT_TILE_DIM ((IN_TILE_DIM) - 2*(FILTER_RADIUS))
@@ -206,7 +207,6 @@ in the original tiles rather than loading them to the shared memory.
 #define TILE_DIM 32
 
 __constant__ float F_c[2*FILTER_RADIUS+1][2*FILTER_RADIUS+1];
-
 
 __global__ void convolution_cached_tiled_2D_const_mem_kernel(float *N,
     float *P, int width, int height) {
