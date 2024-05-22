@@ -41,14 +41,9 @@ and returns an output data array y. The size of the
 filter is an odd number, so it is symmetric
 around the element to be calculated.
 
-<img alt="1D Convolution" src="/assets/CUDA/conv1d_formula.png" class="center" >
-
-For the elements in the input array that do
-exist for the calculation with the filter arrays,
-we create an imaginary element, either 0 or
-any other values; these cells with missing
-elements are known as **ghost cells**.
-These boundary conditions affect the efficiency of the tiling.
+<p align="center">
+  <img alt="1D Convolution" src="/assets/CUDA/conv1d_formula.png" class="center" >
+</p>
 
 A convolution on 2D arrays is known as 2D convolution.
 Let N be the 2-dimensional array, and f be the
@@ -56,7 +51,16 @@ filter of dimension (2r<sub>x</sub>+1) in the
 x-direction and (2r<sub>y</sub>+1) in the y-direction.
 To output convoluted kernel is given by:
 
-<img alt="2D Convolution" src="/assets/CUDA/conv2d_formula.png" class="center" >
+<p align="center">
+  <img alt="2D Convolution" src="/assets/CUDA/conv2d_formula.png" class="center" >
+</p>
+
+For the elements in the input array that do
+exist for the calculation with the filter arrays,
+we create an imaginary element, either 0 or
+any other values; these cells with missing
+elements are known as **ghost cells**.
+These boundary conditions affect the efficiency of the tiling.
 
 ### **Parallel Convolution: a basic algorithm**
 ```cuda
