@@ -123,6 +123,141 @@ elements. It also implies that access to input
 elements also benefits from caching.
 
 ### **Tiled Convolution with Halo cells**
+In the tiled convolution algorithm, all the threads
+in the block load the input tile to the shared memory
+and then load the registers to perform the desired
+operations. This section is similar to tiled matrix
+multiplication discussed in the previous blog;
+the only difference is that the dimensions of the
+input matrix are bigger than the dimensions of the
+resulting output matrix. We could address this
+difference in a number of input and output element
+dimensions in two ways.
+- Launch thread blocks whose dimensions are equal
+to the input tiles. This simplifies loading the
+input tiles, but it becomes complex to map output
+elements because their size is smaller than the
+input tiles. So, we need to disable some threads
+while calculating the output element, which leads
+to reduced efficiency (we'll follow this in our
+example below).
+- Another approach is when the dimensions of the
+block are the same as that of the output element.
+But in this case,e loading the input tile is complex
+to handle. In this case, we do not need to disable
+threads mapping output elements.
+```cuda
+#define IN_TILE_DIM 32
+#define OUT_TILE_DIM ((IN_TILE_DIM) - 2*(FILTER_RADIUS))
+
+__constant__ float F_c[2*FILTER_RADIUS+1][2*FILTER_RADIUS+1];
+
+__global__ void convolution_tiled_2D_const_mem_kernel(float *N, float *P,
+    int width, int height) {
+
+    // Each thread calculates the column and row index of the input
+    int col = blockIdx.x*OUT_TILE_DIM + threadIdx.x - FILTER_RADIUS;
+    int row = blockIdx.y*OUT_TILE_DIM + threadIdx.y - FILTER_RADIUS;
+
+    // Loading input tile into the shared memory
+    __shared__ N_s[IN_TILE_DIM][IN_TILE_DIM];
+
+    // To check whether the input tile is a ghost cell or not
+    if (row >= 0 && row < height && col >= 0 && col < width) {
+        N_s[threadIdx.y][threadIdx.x] = N[row*width + col];
+    } else {
+        N_s[threadIdx.y][threadIdx.x] = 0.0;
+    }
+    __syncthreads();
+
+    // Calculating output elements
+    // We'll deactivate FILTER_RADIUS = 1 exterior layer of threads
+    // Mapping active threads to the output tile elements
+    int tileCol = threadIdx.x - FILTER_RADIUS;
+    int tileRow = threadIdx.y - FILTER_RADIUS;
+
+    // Turning off the threads at the edges of the block
+    if (col >= 0 && col < width && row >= 0 && row < height) {
+        if (tileCol >= 0 && tileCol < OUT_TILE_DIM && tileRow >= 0 && tileRow < OUT_TILE_DIM) {
+            float Pvalue = 0.0f;
+            for (int fRow = 0; fRow < 2*FILTER_RADIUS+1; fRow++) {
+                for (int fCol = 0; fCol < 2*FILTER_RADIUS+1; fCol++) {
+                    Pvalue += F[fRow][fCol]*N_s[tileRow+fRow][tileCol+fCol];
+                }
+            }
+            P[row*width+col] = Pvalue;
+        }
+    }
+}
+```
+
+### **Tiled Convolution using Caches for halo cells**
+Tiled convolution algorithm that uses the same
+dimensions for input and output tiles and loads
+only internal elements of each tile into the
+shared memory. Note that the halo cells of an
+input tile of a block are also internal elements
+of neighbouring tiles. There is a possibility that
+while computing the values, the element at halo
+cells resides on L2 cache memory, hence saving us
+from the DRAM traffic. We can leave the halo cells
+in the original tiles rather than loading them to the shared memory.
+```cuda
+#define TILE_DIM 32
+
+__constant__ float F_c[2*FILTER_RADIUS+1][2*FILTER_RADIUS+1];
+
+
+__global__ void convolution_cached_tiled_2D_const_mem_kernel(float *N,
+    float *P, int width, int height) {
+
+    // Simplified version of the earlier kernel
+    // because now we are not loading halo cells
+    // into the shared memory
+    int col = blockIdx.x*TILE_DIM + threadIdx.x;
+    int row = blockIdx.y*TILE_DIM + threadIdx.y;
+
+    // Loading input tile
+    __shared__ N_s[TILE_DIM][TILE_DIM];
+
+    // Simplified version of the earlier kernel
+    // because now we are not loading halo cells
+    // into the shared memory
+    if(row < height && col < width) {
+        N_s[threadIdx.y][threadIdx.x] = N[row*width + col];
+    } else {
+        N_s[threadIdx.y][threadIdx.x] = 0.0;
+    }
+    __syncthreads();
+
+    // Calculating output elements
+    // Turning off the threads at the edges of the block
+    if (col < width && row < height) {
+        float Pvalue = 0.0f;
+        for (int fRow = 0; fRow < 2*FILTER_RADIUS+1; fRow++) {
+            for (int fCol = 0; fCol < 2*FILTER_RADIUS+1; fCol++) {
+                // Handling of halo cells
+                if (threadIdx.x-FILTER_RADIUS+fCol >= 0 &&
+                    threadIdx.x-FILTER_RADIUS+fCol < TILE_DIM &&
+                    threadIdx.y-FILTER_RADIUS+fRow >= 0 &&
+                    threadIdx.y-FILTER_RADIUS+fRow < TILE_DIM) {
+                  Pvalue += F[fRow][fCol]*N_s[threadIdx.y+fRow][threadIdx.x+fCol];
+               } else {
+                   // Check if the halo cells are ghost cells or not
+                   if (row-FILTER_RADIUS+fRow >= 0 &&
+                       row-FILTER_RADIUS+fRow < height &&
+                       col-FILTER_RADIUS+fCol >=0 &&
+                       col-FILTER_RADIUS+fCol < width) {
+                     Pvalue += F[fRow][fCol]*N[(row-FILTER_RADIUS+fRow)*width
+                       +col-FILTER_RADIUS+fCol];
+                  }
+              }
+           }
+           P[row*width+col] = Pvalue;
+       }
+    }
+}
+```
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
