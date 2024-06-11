@@ -50,3 +50,137 @@ __global__ void histo_kernel(char* data, unsigned int length, unsigned int* hist
 ```
 
 ### **Latency and throughput of atomic operations**
+Note that it should be very clear that the many DRAM accesses results in high memory access throughput. This sometimes break down when atomic operations update the same memory location. This can be resolved by starting a new read-modify-write sequence once the previous read-modify-write-sequence is completed. Only one atomic operation execute at the same memory location at a time. This duration is approximately the latency of a memory load and latency of a memory store. The length of these time section is the minimum amount of time dedicated for each atomic operation. To improve the throughput of atomic operations we could reduce the access latency to the heavily contended locations. Cache memories are primary tools to reduce memory access latency.
+
+### **Privatization**
+Privatization is the process to replicate output data into private copies so that each subset of thread can update its private copy. Main benefit is it has low latency and it increases the throughput. But private copies need to be merged into the original data structure after the computation completes. Therefore, privatization is done for a group of threads rather than an individual threads.
+```cuda
+// creates a private copy of histogram to every block
+// these private copy will be cached in the L2 cache memory
+__global__ void histo_private_kernel(char *data, unsigned int length, unsigned int *histo) {
+    unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+
+    if (i < length) {
+        int alphabet_position = data[i] - 'a';
+        if (alphabet_position >= 0 && alphabet_position < 26) {
+            atomicAdd(&(histo[blockIdx.x*NUM_BINS + alphabet_position/4]), 1);
+        }
+    }
+
+    // commit the values in private copy into the block
+    if (blockIdx.x > 0) {
+        __syncthreads();
+        // responsible for creating one or more histogram bins
+        for (unsigned int bin=threadIdx.x; bin<NUM_BINS; bin += blockDim.x) {
+            unsigned int binValue = histo[blockIdx.x*NUM_BINS + bin];
+            if (binValue > 0) {
+                atomicAdd(&(histo[bin]), binValue);
+            }
+        }
+    }
+}
+```
+Using shared memory allocation:
+```cuda
+// creates a private copy of histogram to every block
+// these private copy will be cached in the L2 cache memory
+__global__ void histo_private_kernel(char *data, unsigned int length, unsigned int *histo) {
+
+    // privatized bins
+    __shared__ unsigned int histo_s[NUM_BINS];
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        histo_s[bin] = 0u;
+    }
+    __syncthreads();
+
+    unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+    if (i < length) {
+        int alphabet_position = data[i] - 'a';
+        if (alphabet_position >= 0 && alphabet_position < 26) {
+            atomicAdd(&(histo_s[alphabet_position/4]), 1);
+        }
+    }
+
+    // commit the values in private copy into the block
+    __syncthreads();
+    // responsible for creating one or more histogram bins
+    for (unsigned int bin=threadIdx.x; bin<NUM_BINS; bin += blockDim.x) {
+        // read private bin value
+        unsigned int binValue = histo_s[bin];
+        if (binValue > 0) {
+            atomicAdd(&(histo[bin]), binValue);
+        }
+    }
+}
+```
+
+### **Coarsening**
+As discussed above shared memory reduces the latency of each atomic operation in privatized histogram. But their is an extra overhead while making the private copy to the public copy. This is done once per thread block. This overhead is worth paying when we execute threads blocks in parallel. But when the number of thread blocks that are launched exceeds the number of that can be executed by the hardware, there is unecessay privatization overhead. This overhead can be reduced via thread coarsening, i.e., by reducing the number of private copies made, by reducing the number of blocks such that each thread process multiple input elements. We'll read two ways to assign multiple input elements to a thread:
+- Contiguous Partitioning: sequential access pattern by each thread makes good use of cache lines.
+- Interleaved Partitioning
+
+#### **Contiguous Partitioning**
+```cuda
+__global__  void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
+    // initialize private bins
+    __shared__ unsigned int histo_s[NUM_BINS];
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        histo_s[binIdx] = 0u;
+    }
+    __syncthreads();
+
+    // histogram
+    // Contiguous partitioning
+    // CFACTOR is a coarsening factor
+    unsigned int tid = blockIdx.x*blockDim.x + threadIdx.x;
+    for (unsigned int i = tid*CFACTOR; i < min((tid+1)*CFACTOR, length); i++) {
+        int alphabet_position = data[i] - 'a';
+        if (alphabet_position >= 0 && alphabet_position < 26) {
+            atomicAdd(&(histo_s[alphabet_position/4]), 1);
+        }
+    }
+
+    __syncthreads();
+    // commit to global memory
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        unsigned int binValue = histo_s[binIdx];
+        if (binValue > 0) {
+            atomicAdd(&(histo[binIdx]), binValue);
+        }
+    }
+}
+```
+
+#### **Interleaved Partitioning**
+```cuda
+__global__  void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
+    // initialize private bins
+    __shared__ unsigned int histo_s[NUM_BINS];
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        histo_s[binIdx] = 0u;
+    }
+    __syncthreads();
+
+    // histogram
+    // Interleaved partitioning
+    unsigned int tid = blockIdx.x*blockDim.x + threadIdx.x;
+    for (unsigned int i = tid; i < length; i += blockDim.x*gridDim.x) {
+        int alphabet_position = data[i] - 'a';
+        if (alphabet_position >= 0 && alphabet_position < 26) {
+            atomicAdd(&(histo_s[alphabet_position/4]), 1);
+        }
+    }
+
+    __syncthreads();
+    // commit to global memory
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        unsigned int binValue = histo_s[binIdx];
+        if (binValue > 0) {
+            atomicAdd(&(histo[binIdx]), binValue);
+        }
+    }
+}
+```
+
+### **Aggregation**
+
