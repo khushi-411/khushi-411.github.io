@@ -183,4 +183,45 @@ __global__  void histo_private_kernel(char* data, unsigned int length, unsigned 
 ```
 
 ### **Aggregation**
+Datasets have many identical data values in some areas. Such datasets use each thread to aggregate consecutive updates into a single update if they update the same element of the histogram. These updates reduces the number of atomic operations. Aggregated kernel requires more statements and variables.
+```cuda
+__global__ void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
+    // initialize privatized bins
+    __shared__ unsigned int histo_s[NUM_BINS];
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        histo_s[bin] = 0u;
+    }
+    __syncthreads();
 
+    // histogram
+    // to keep track of the number of updates aggregated
+    unsigned int accumulator = 0;
+    // tracks the index of the histogram bin
+    int prevBinIdx = -1;
+    unsigned int tid = blockIdx.x*blockDim.x + threadIdx.x;
+    for (unsigned int i = tid; i < length; i += blockDim.x*gridDim.x) {
+        int alphabet_position = data[i] - 'a';
+        if (alphabet_position >= 0 &&alphabet_position < 26) {
+            int bin = alphabet_position/4;
+            if (bin == prevBinIdx) {
+                ++accumulator;
+            } else {
+                if (accumulator > 0) {
+                    atomicAdd(&(histo_s[prevBinIdx]), accumulator);
+                }
+                accumulator = 1;
+                prevBinIdx = bin;
+            }
+        }
+    }
+
+    __syncthreads();
+    // commit to global memory
+    for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
+        unsigned int binValue = histo_s[binIdx];
+        if (binValue > 0) {
+            atomicAdd(&(histo[bin]), binValue);
+        }
+    }
+}
+```
