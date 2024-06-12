@@ -37,7 +37,7 @@ the block, aka, depicts the number of threads in a block).
 To launch a kernel, we need to provide two parameters, as shown below:
 
 ```cuda
-// dim3 (built-in variable) is a type
+// dim3: built-in type of a variable
 // dimGrid and dimBlock are host code variables
 dim3 dimGrid(32, 1, 1);
 dim3 dimBlock(128, 1, 1);
@@ -64,14 +64,15 @@ of a thread assigned to process the pixel is given by:
 Vertical (row co-ordinate) = blockIdx.y * blockDim.y + threadIdx.y;
 Horizontal (column co-ordinate) = blockIdx.x * blockDim.x + threadIdx.x;
 ```
-In C/CUDA, the information on the number of columns/rows in
+In CUDA C, the information on the number of columns/rows in
 dynamically allocated arrays is not known at compile time. As a result,
 programmers need to explicitly linearize, aka flatten, a dynamically allocated
 2D or a 3D array into a linear array in the current CUDA C.
-This is due to the flat memory space in modern computers. There are two
-ways we can linearize multidimensional arrays: row-major layout and
-column-major layout. Below is the diagram showing how to linearize the
-row-major 2-dimensional array:
+This is due to the flat memory space in modern computers.
+We can linearize multidimensional arrays in two different
+memory format: row-major layout and
+column-major layout. The figure below shows how to linearize the
+2-dimensional array in row-major layout:
 
 <img alt="Linearize multi-dimensional arrays" src="/assets/CUDA/linearize.png" class="center" >
 
@@ -94,7 +95,7 @@ __global__ void colortoGrayscaleConversionKernel(unsigned char* Pout,
         // space in modern computers)
         // 1D equivalent index for an element of M of row j and column i
         // is j * 4 + i; where 4 is width of matrix (4 x 4)
-        int gray offset = row * width + col;
+        int grayOffset = row * width + col;
 
         // RGB image having CHANNELS times more columns than gray-scale
         int rgbOffset = grayOffset * CHANNELS;
@@ -146,13 +147,10 @@ __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
 ```
 
 ### **Matrix Multiplication: Naive Implementation**
-Consider a matrix `M` of shape `i x j` and a matrix `N` of
-shape `j x k`, such that multiplication of the matrix produces another
-matrix `P`, of shape `i x k`. Mathematically, it is given by:
-Here, k = 0, 1, 2 ..., j-1.
-```math
-P_{row, col} = \sum M_{row, k} * N_{k, col}
-```
+Consider a matrix **M** of shape **i x j** and a matrix **N** of
+shape **j x k**, such that multiplication of the matrix produces another
+matrix **P**, of shape **i x k**. Mathematically, it is given by:
+<img alt="Matrix Multiplication Equation" src="/assets/CUDA/mm_formula.png" class="center" >
 
 <img alt="Matrix Multiplication" src="/assets/CUDA/matrix_multiplication.png" class="center" >
 
@@ -195,7 +193,7 @@ thread hierarchy, the memory layout of the dynamically allocated arrays, and the
 rearrangement into 1D arrays while computing. We then demonstrated the mechanics of
 multi-dimensional array processing via various examples like color-to-gray-scale conversion,
 image blurring, and the naive implementation of matrix multiplication. In the upcoming series,
-learn about the basics of computing architecture and scheduling of the algorithms
+we'll learn about the basics of compute architecture and scheduling of the algorithms
 to optimize our naive matrix multiplication kernel implementation.
 
 ### **Resources & References**
