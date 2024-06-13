@@ -188,7 +188,7 @@ that the hardware resources become underutilized.
 increasing resource consumption to such an extent that it hurts the occupancy.
 
 ### **A Checklist of Optimization**
-Copied from the book<sup>[1](#link1)</sup> (todo: update it):
+Copied from the book<sup>[1](#link1)</sup>:
 <table align="center" cellspacing="30" cellpadding="30">
 <tr>
     <th style="text-align: center"> Optimizations </th>

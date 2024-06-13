@@ -15,10 +15,10 @@ Convolution is an array operation used in
 various forms in signal processing, digital recording,
 image/video processing, and computer vision.
 Each output element is calculated independently
-as a weighted sum of the corresponding input elements
+as a weighted sum of the corresponding
 and surrounding input elements. The weights used in
-calculating the weighted sum are defined as a filter
-array known as a convolution kernel. However,
+calculating the weighted sum are known as a filter
+array and are defined as a convolution kernel. However,
 processing multiple data inputs is challenging,
 so it becomes a sophisticated use case for tiling
 methods and input data staging methods.
@@ -32,12 +32,12 @@ by [Wen-mei W. Hwu](https://scholar.google.com/citations?user=ohjQPx8AAAAJ&hl=en
 and [Izzat El Hajj](https://scholar.google.com/citations?user=_VVw504AAAAJ&hl=en).
 
 ### **Background**
-A convolution on 1D data is known as 1D convolution,
-it is defined as an input data array of n
-elements [x<sub>0</sub>, x<sub>1</sub>,...,x<sub>n-1</sub>]
-and a filter array of 2r+1 elements
+A convolution on 1D array is known as 1D convolution.
+Let n be the number of elements in the input array
+[x<sub>0</sub>, x<sub>1</sub>,...,x<sub>n-1</sub>]
+and let 2r+1 elements in the filter array
 [f<sub>0</sub>, f<sub>1</sub>,...,f<sub>2r</sub>]
-and returns an output data array y. The size of the
+such that it returns an output array y. The size of the
 filter is an odd number, so it is symmetric
 around the element to be calculated.
 
@@ -55,7 +55,11 @@ To output convoluted kernel is given by:
   <img alt="2D Convolution" src="/assets/CUDA/conv2d_formula.png" class="center" >
 </p>
 
-For the elements in the input array that do
+<p align="center">
+  <img alt="2D Convolution" src="/assets/CUDA/conv2d.png" class="center" >
+</p>
+
+For the elements in the input array that do not
 exist for the calculation with the filter arrays,
 we create an imaginary element, either 0 or
 any other values; these cells with missing
