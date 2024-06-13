@@ -24,7 +24,7 @@ so it becomes a sophisticated use case for tiling
 methods and input data staging methods.
 
 This blog post is written while reading the
-third chapter, Compute Architecture and Scheduling,
+seventh chapter, Convolution,
 of the incredible book "Programming Massively Parallel
 Processors: A Hands-on Approach<sup>[1](#link1)</sup>"
 by [Wen-mei W. Hwu](https://scholar.google.com/citations?user=ohjQPx8AAAAJ&hl=en),
