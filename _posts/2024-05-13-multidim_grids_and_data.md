@@ -150,6 +150,7 @@ __global__ void blurKernel(unsigned char* in, unsigned char* out, int w,
 Consider a matrix **M** of shape **i x j** and a matrix **N** of
 shape **j x k**, such that multiplication of the matrix produces another
 matrix **P**, of shape **i x k**. Mathematically, it is given by:
+
 <img alt="Matrix Multiplication Equation" src="/assets/CUDA/mm_formula.png" class="center" >
 
 <img alt="Matrix Multiplication" src="/assets/CUDA/matrix_multiplication.png" class="center" >

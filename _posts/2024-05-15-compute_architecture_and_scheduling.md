@@ -11,7 +11,7 @@ redirect_from:
 ---
 
 ### **Introduction**
-Hi there! The blog post aims to share a high-level view of the
+Hi there! The blog post aims to share a high-level overview of the
 computing architecture. It then explores the concepts of resource
 alignment, block scheduling, and occupancy. It also discusses thread
 scheduling, latency tolerance, control divergence, and synchronization.
@@ -27,6 +27,8 @@ and [Izzat El Hajj](https://scholar.google.com/citations?user=_VVw504AAAAJ&hl=en
 A CUDA-capable GPU is organized into an array of highly threaded
 steaming microprocessors (SMs), each SM having several processing
 units called CUDA cores.
+
+<img alt="Architecture of a CUDA-capable GPU" src="/assets/CUDA/gpu_device_arch.png" class="center" >
 
 ### **Block Scheduling**
 When a kernel is launched, the CUDA runtime system launches a
@@ -45,7 +47,7 @@ threads such that a new process will start only if the activities of
 all the threads in a block are completed. It's the programmer's
 responsibility to ensure that each thread has all the required
 resources needed for the execution. Otherwise, it'll lead to a
-deadlock; that is, the thread will never be able to complete
+**deadlock**; that is, the thread will never be able to complete
 the execution. This will lead to other threads waiting for the
 execution forever, and the programmer will never know about it.
 Note that the block can begin new execution only if the runtime
@@ -57,7 +59,7 @@ This allows transparent scalability across different devices.
 
 ### **Wraps and SIMD Hardware**
 Once the blocks are assigned to the SM, they are divided into
-32 thread units called wraps. Thread scheduling must be
+32 thread each units called wraps. Thread scheduling must be
 handled with hardware-specific implementations. Each block can have
 multiple units of wraps. If a block does not have a number of
 threads as a multiple of 32, it will be padded with inactive threads.

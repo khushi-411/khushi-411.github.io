@@ -17,7 +17,7 @@ for efficient thread access. Until now, we executed our
 programs all from global memory access (off-chip DRAM),
 which leads to delays and traffic and negatively affects
 performance. In this blog post, we will study ways to
-tolerate these long-latency operations, i.e. it'll
+tolerate these long-latency operations, i.e. we'll
 introduce various techniques to reduce global memory access.
 
 This blog post is written while reading the fifth chapter,
@@ -168,7 +168,7 @@ any calculations, then calculate the products and additions.
 <img alt="Execution phases of a Tiled Matrix Multiplication" src="/assets/CUDA/tiled_mm.png" class="center" >
 
 The above image from the book shows the activities of
-threads in block_{0,0}. The shared memory elements
+threads in block<sub>(0,0)</sub>. The shared memory elements
 for arrays M and N are called Mds and Nds.
 These Mds and Nds remain in the shared memory and
 are reused across multiple phases. Hence, it saves

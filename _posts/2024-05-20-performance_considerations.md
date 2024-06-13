@@ -11,12 +11,13 @@ redirect_from:
 ---
 
 ### **Introduction**
-To achieve high-performance computing, we need to
+The aim of the blog posts is to explain how to
+achieve high-performance computing. We need to
 manage parallel code alongside the given hardware
-resources. In this part of the blog post, we'll
+resources. We'll
 read about the off-chip memory architecture and
 discuss memory coalescing, memory latency hiding,
-and thread coalescing (this depends on the different
+and thread coalescing (which depends on the different
 aspects of the architecture). Lastly, we'll study
 the common checklist of optimization techniques
 for different types of parallel patterns.
