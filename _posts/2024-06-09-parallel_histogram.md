@@ -11,7 +11,7 @@ redirect_from:
 ---
 
 ### **Introduction**
-The aim of the blog posts is to introduce a parallel histogram pattern, where each output element can be updated by any thread. Therefore, we should coordinate among threads as they update the output value. In this blog post, we will read the introduction about using atomic operations to serialize the updates of each element. Then, we will study privatization, an optimization technique. Let's dig in!
+The aim of the blog posts is to introduce a parallel histogram pattern, where each output element can be updated by any thread. Therefore, we should coordinate among threads as they update the output value. In this blog post, we will read the introduction about using atomic operations to serialize the updates of each element. And then we will study about an optmization technique, privatization. Let's dig in!
 
 This blog post is written while reading the
 ninth chapter, Parallel Histogram: An Introduction
@@ -22,10 +22,10 @@ by [Wen-mei W. Hwu](https://scholar.google.com/citations?user=ohjQPx8AAAAJ&hl=en
 [David B. Kirk](https://scholar.google.com/citations?user=fMbArPwAAAAJ&hl=en),
 and [Izzat El Hajj](https://scholar.google.com/citations?user=_VVw504AAAAJ&hl=en).
 
-### **Background**
-
 ### **Atomic operations and a basic histogram kernel**
-To parallelize histogram computation, launch the same number of threads as the number of data such that each thread has one input element. Each thread reads the assigned input and increments the appropriate counter. When multiple threads increase the same elements, it is known as output interference. Programmers should handle these. The operations perform read, write and modify. If any undesirable outcomes are caused, it is known as *read-modify-write race condition*; when two or more threads competes to atain same results. 
+To parallelize histogram computation, launch the same number of threads as the number of data such that each thread has one input element. Each thread reads the assigned input and increments the appropriate counter. When multiple threads increase the same elements, it is known as *output interference*. Programmers should handle these race conditions and atomic operations. These operations perform read, write and modify. The undesirable outcomes are caused, is known as *read-modify-write race condition*; i.e., when two or more threads competes to atain same results.
+
+<img alt="Parallelization in histogram" src="/assets/CUDA/atomicop.png" class="center" >
 
 An atomic operation on a memory location is an operation that performs a read-modify-write sequence on the memory location in such a way that no other read-modify-write sequence to the location can overlap with it. Read, modify, and write cannot be divided further; therefore named an atomic operation. Various atomic operations are addition, subtraction, increment, decrement, minimum, maximum, logical and, and logical or. To perform atomic add operation in CUDA:
 ```cuda
@@ -51,6 +51,8 @@ __global__ void histo_kernel(char* data, unsigned int length, unsigned int* hist
 
 ### **Latency and throughput of atomic operations**
 Note that it should be very clear that the many DRAM accesses result in high memory access throughput. This sometimes breaks down when atomic operations update the same memory location. This can be resolved by starting a new read-modify-write sequence once the previous read-modify-write-sequence is completed. Only one atomic operation executes at the same memory location at a time. This duration is approximately the latency of a memory load and the latency of a memory store. The length of these time sections is the minimum amount of time dedicated to each atomic operation. To improve the throughput of atomic operations, we could reduce the access latency to the heavily contended locations. Cache memories are primary tools to reduce memory access latency.
+
+<img alt="Latency and throughput of atomic operations" src="/assets/CUDA/latency_throughput.png" class="center" >
 
 ### **Privatization**
 Privatization is the process of replicating output data into private copies so that each subset of threads can update its private copy. Its main benefits are low latency and increased throughput. However, private copies need to be merged into the original data structure after the computation is completed. Therefore, privatization is done for a group of threads rather than individual threads.
