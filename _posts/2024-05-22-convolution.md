@@ -66,6 +66,8 @@ any other values; these cells with missing
 elements are known as **ghost cells**.
 These boundary conditions affect the efficiency of the tiling.
 
+<img alt="Ghost cells" src="/assets/CUDA/ghost_cells.png" class="center" >
+
 ### **Parallel Convolution: a basic algorithm**
 ```cuda
 __global__ void convolution_2d_basic_kernel(float* N, float* F, float* P,
@@ -84,7 +86,7 @@ __global__ void convolution_2d_basic_kernel(float* N, float* F, float* P,
 
             // There will be control flow divergence
             // It'll depend on the width and height of the
-            //     input array and radius of the filter
+            // input array and radius of the filter
             // To handle ghost cells
             if (inRow >= 0 && inRow < height && inCol >= 0 && inCol < width) {
                 Pvalue += F[fRow][fCol]*N[inRow*width + inCol];
@@ -150,6 +152,8 @@ block is the same as that of the output element.
 But in this case,e loading the input tile is complex
 to handle. In this case, we do not need to disable
 threads mapping output elements.
+
+<img alt="Input vs Output tile dimension" src="/assets/CUDA/inputvsoutputtile.png" class="center" >
 
 ```cuda
 #define IN_TILE_DIM 32
