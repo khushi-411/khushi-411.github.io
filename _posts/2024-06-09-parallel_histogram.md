@@ -11,7 +11,7 @@ redirect_from:
 ---
 
 ### **Introduction**
-The aim of the blog posts is to introduce a parallel histogram pattern, where each output element can be updated by any thread. Therefore, we should coordinate among threads as they update the output value. In this blog post, we will read the introduction about using atomic operations to serialize the updates of each element. And then we will study about an optmization technique, privatization. Let's dig in!
+The aim of the blog posts is to introduce a parallel histogram pattern, where each output element can be updated by any thread. Therefore, we should coordinate among threads as they update the output value. In this blog post, we will read the introduction about using atomic operations to serialize the updates of each element. Then, we will study an optimization technique: privatization. Let's dig in!
 
 This blog post is written while reading the
 ninth chapter, Parallel Histogram: An Introduction
@@ -86,7 +86,7 @@ __global__ void histo_private_kernel(char *data, unsigned int length, unsigned i
     }
 }
 ```
-If number of bins in the histogram is small, the private copy can be declared in the shared memory. But the problem is we cannot access multiple blocks because the blocks do not share visibility in the shared memory. But the latency of the data is reduced while placing data in shared memory. As discussed above, the reduction in latency leads to improved throughput of the atomic operations. The histogram kernel using shared memory allocation:
+If the number of bins in the histogram is small, the private copy can be declared in the shared memory. But the problem is we cannot access multiple blocks because the blocks do not share visibility in the shared memory. However, the latency of the data is reduced while placing data in shared memory. As discussed above, the reduction in latency leads to improved throughput of the atomic operations. The histogram kernel using shared memory allocation:
 ```cuda
 // creates a private copy of the histogram for every block
 // These private copies will be cached in the L2 cache memory
@@ -195,7 +195,7 @@ __global__  void histo_private_kernel(char* data, unsigned int length, unsigned 
 ```
 
 ### **Aggregation**
-Datasets have many identical data values in some areas. Such datasets use each thread to aggregate consecutive updates into a single update if they update the same element of the histogram. These updates reduces the number of atomic operations thus improving the throughput of the computation. An aggregated kernel requires more statements and variables. Thus if the data distribution has many atomic operation execution, this aggregation leads to higher speed.
+Datasets have many identical data values in some areas. Such datasets use each thread to aggregate consecutive updates into a single update if they update the same element of the histogram. These updates reduce the number of atomic operations, thus improving the throughput of the computation. An aggregated kernel requires more statements and variables. Thus, if the data distribution has many atomic operation executions, the aggregation leads to higher speed.
 ```cuda
 __global__ void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
     // initialize privatized bins
