@@ -55,7 +55,10 @@ Note that it should be very clear that the many DRAM accesses result in high mem
 <img alt="Latency and throughput of atomic operations" src="/assets/CUDA/latency_throughput.png" class="center" >
 
 ### **Privatization**
-Privatization is the process of replicating output data into private copies so that each subset of threads can update its private copy. Its main benefits are low latency and increased throughput. However, private copies need to be merged into the original data structure after the computation is completed. Therefore, privatization is done for a group of threads rather than individual threads.
+Privatization is the process of replicating output data into private copies so that each subset of threads can update its private copy. Its main benefits are low latency and increased throughput. However, the main downside is that the private copies need to be merged into the original data structure after the computation is completed. Therefore, privatization is done for a group of threads rather than individual threads.
+
+<img alt="Privatiization in text histogram" src="/assets/CUDA/privatization.png" class="center" >
+
 ```cuda
 // creates a private copy of the histogram for every block
 // These private copies will be cached in the L2 cache memory
@@ -71,6 +74,7 @@ __global__ void histo_private_kernel(char *data, unsigned int length, unsigned i
 
     // commit the values in private copy into the block
     if (blockIdx.x > 0) {
+        // To let threads wait for each other to finish updating the private copy
         __syncthreads();
         // responsible for creating one or more histogram bins
         for (unsigned int bin=threadIdx.x; bin<NUM_BINS; bin += blockDim.x) {
@@ -82,13 +86,13 @@ __global__ void histo_private_kernel(char *data, unsigned int length, unsigned i
     }
 }
 ```
-Using shared memory allocation:
+If number of bins in the histogram is small, the private copy can be declared in the shared memory. But the problem is we cannot access multiple blocks because the blocks do not share visibility in the shared memory. But the latency of the data is reduced while placing data in shared memory. As discussed above, the reduction in latency leads to improved throughput of the atomic operations. The histogram kernel using shared memory allocation:
 ```cuda
 // creates a private copy of the histogram for every block
 // These private copies will be cached in the L2 cache memory
 __global__ void histo_private_kernel(char *data, unsigned int length, unsigned int *histo) {
 
-    // privatized bins
+    // privatized bins in shared memory
     __shared__ unsigned int histo_s[NUM_BINS];
     for (unsigned int bin = threadIdx.x; bin < NUM_BINS; bin += blockDim.x) {
         histo_s[bin] = 0u;
@@ -119,9 +123,12 @@ __global__ void histo_private_kernel(char *data, unsigned int length, unsigned i
 ### **Coarsening**
 As discussed above, shared memory reduces the latency of each atomic operation in the privatized histogram. But their is an extra overhead while making the private copy to the public copy. This is done once per thread block. This overhead is worth paying when we execute thread blocks in parallel. But when the number of thread blocks that are launched exceeds the number that can be executed by the hardware, there is unnecessary privatization overhead. This overhead can be reduced via thread coarsening, i.e., by reducing the number of private copies made and by reducing the number of blocks such that each thread processes multiple input elements. We'll read two ways to assign multiple input elements to a thread:
 - Contiguous Partitioning: sequential access pattern by each thread makes good use of cache lines.
-- Interleaved Partitioning
+- Interleaved Partitioning: partitions processed by the different threads are interleaved with each other.
 
 #### **Contiguous Partitioning**
+
+<img alt="Contiguous Partitioning" src="/assets/CUDA/contiguous_partitioning.png" class="center" >
+
 ```cuda
 __global__  void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
     // initialize private bins
@@ -154,6 +161,9 @@ __global__  void histo_private_kernel(char* data, unsigned int length, unsigned 
 ```
 
 #### **Interleaved Partitioning**
+
+<img alt="Interleaved Partitioning" src="/assets/CUDA/interleaved_partitioning.png" class="center" >
+
 ```cuda
 __global__  void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
     // initialize private bins
@@ -185,7 +195,7 @@ __global__  void histo_private_kernel(char* data, unsigned int length, unsigned 
 ```
 
 ### **Aggregation**
-Datasets have many identical data values in some areas. Such datasets use each thread to aggregate consecutive updates into a single update if they update the same element of the histogram. These updates reduce the number of atomic operations. An aggregated kernel requires more statements and variables.
+Datasets have many identical data values in some areas. Such datasets use each thread to aggregate consecutive updates into a single update if they update the same element of the histogram. These updates reduces the number of atomic operations thus improving the throughput of the computation. An aggregated kernel requires more statements and variables. Thus if the data distribution has many atomic operation execution, this aggregation leads to higher speed.
 ```cuda
 __global__ void histo_private_kernel(char* data, unsigned int length, unsigned int* histo) {
     // initialize privatized bins
