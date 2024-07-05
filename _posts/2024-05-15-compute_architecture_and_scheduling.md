@@ -119,6 +119,25 @@ When the maximum number of threads per block is not divisible
 by the block size, occupancy is negatively affected.
 We should also note the register resource limitations on occupancy.
 
+### **Where to Go Next?**
+I hope you enjoyed reading this blog post!
+If you have any questions or suggestions, please feel
+free to drop a comment or reach out to me. I'd love to hear from you!
+
+This post is part of an ongoing series on CUDA programming.
+I plan to continue this series and keep things exciting.
+Check out the rest of my CUDA blog series:
+1. [Introduction to Parallel Programming and CPU-GPU Architectures](https://khushi-411.github.io/gpu_intro/)
+2. [Multidimensional Grids and Data](https://khushi-411.github.io/multidim_grids_and_data/)
+3. [Compute Architecture and Scheduling](https://khushi-411.github.io/compute_architecture_and_scheduling/)
+4. [Memory Architecture and Data Locality](https://khushi-411.github.io/memory_architecture_and_data_locality/)
+5. [Performance Considerations](https://khushi-411.github.io/performance_considerations/)
+6. [Convolution](https://khushi-411.github.io/convolution/)
+7. [Stencil](https://khushi-411.github.io/stencil/)
+8. [Parallel Histogram](https://khushi-411.github.io/parallel_histogram/)
+
+Stay tuned for more!
+
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
 <a id="link2">2</a> [Intro to Compute and Memory Architecture YouTube](https://youtu.be/lTmYrKwjSOU) by [Thomas Viehmann](https://lernapparat.de/), Feb 2024
