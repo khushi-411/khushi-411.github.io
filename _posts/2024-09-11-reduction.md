@@ -1,12 +1,12 @@
 ---
 layout: post
 title: Reduction
-date: 2024-06-25
+date: 2024-09-11
 category: CUDA
 tags:
 - cuda
 redirect_from:
-- /cuda/2024/06/25/reduction/
+- /cuda/2024/09/11/reduction/
 - /reduction.html
 ---
 
