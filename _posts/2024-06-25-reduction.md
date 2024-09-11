@@ -122,7 +122,7 @@ __global__ SegmentedSumReductionKernel(float* input, float* output) {
 ### **Thread Coarsening for Reduced Overhead**
 Until now to parallelize reduction, we have actually paid heacy price to distribute the work accross multiple thread blocks. This process increases the hardware under-utilization as more wraps starts becoming idle and final wrap experience more control divergence. Hence, we'll serialize the threads blocks manually so that the hardware resources are not spend here. We'll use thread coarsening technique to do that and start by assigning more elements to each thread block.
 
-<img alt="Thread Coarsening in reduction" src="/assets/CUDA/reduction_thread_coarsening" class="center" >
+<img alt="Thread Coarsening in reduction" src="/assets/CUDA/reduction_thread_coarsening.png" class="center" >
 
 The kernel code for implementing reduction with thread coarsening for the multiblock segmented kernel is given below.
 
