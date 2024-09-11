@@ -149,7 +149,7 @@ to reduced efficiency (we'll follow this in our
 example below).
 - Another approach is when the dimensions of the
 block is the same as that of the output element.
-But in this case,e loading the input tile is complex
+But in this case, loading the input tile is complex
 to handle. In this case, we do not need to disable
 threads mapping output elements.
 
@@ -283,8 +283,10 @@ Check out the rest of my CUDA blog series:
 6. [Convolution](https://khushi-411.github.io/convolution/)
 7. [Stencil](https://khushi-411.github.io/stencil/)
 8. [Parallel Histogram](https://khushi-411.github.io/parallel_histogram/)
+9. [Reduction](https://khushi-411.github.io/reduction/)
 
 Stay tuned for more!
 
 ### **Resources & References**
-<a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
+<a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
+<a id="link2">2</a>. [Excalidraw](https://excalidraw.com/) is used to draw the kernels.

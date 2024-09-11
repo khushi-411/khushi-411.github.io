@@ -301,8 +301,11 @@ Check out the rest of my CUDA blog series:
 6. [Convolution](https://khushi-411.github.io/convolution/)
 7. [Stencil](https://khushi-411.github.io/stencil/)
 8. [Parallel Histogram](https://khushi-411.github.io/parallel_histogram/)
+9. [Reduction](https://khushi-411.github.io/reduction/)
 
 Stay tuned for more!
 
 ### **Resources & References**
-<a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022
+<a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
+<a id="link2">2</a>. [Lecture 8: CUDA Performance Checklist](https://www.youtube.com/watch?v=SGhfUhlowB4); by [Mark Saroufin](https://x.com/marksaroufim); March 2024 \
+<a id="link3">3</a>. [Excalidraw](https://excalidraw.com/) is used to draw the kernels.
