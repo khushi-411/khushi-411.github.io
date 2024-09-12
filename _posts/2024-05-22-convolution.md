@@ -14,14 +14,20 @@ redirect_from:
 Convolution is an array operation used in
 various forms in signal processing, digital recording,
 image/video processing, and computer vision.
-Each output element is calculated independently
+In convolution, each output element is calculated independently
 as a weighted sum of the corresponding
-and surrounding input elements. The weights used in
-calculating the weighted sum are known as a filter
-array and are defined as a convolution kernel. However,
-processing multiple data inputs is challenging,
-so it becomes a sophisticated use case for tiling
-methods and input data staging methods.
+and surrounding input elements. These weights used in
+calculating the weighted sum are known as a *filter
+array* and are defined as a *convolution kernel*. However,
+processing large datasets efficiently poses significant challenges,
+so it becomes a sophisticated use case for advanced optimization techniques,
+such as tiling methods and input data staging methods.
+
+In this post, we will explore the basics of
+convolution and dive into several optimization
+techniques. We'll cover topics like constant
+memory and caching, tiled convolution with halo cells,
+and leveraging caches for halo cells to improve performance.
 
 This blog post is written while reading the
 seventh chapter, Convolution,
@@ -289,4 +295,4 @@ Stay tuned for more!
 
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
-<a id="link2">2</a>. [Excalidraw](https://excalidraw.com/) is used to draw the kernels.
+<a id="link2">2</a>. I used [Excalidraw](https://excalidraw.com/) to draw the kernels.

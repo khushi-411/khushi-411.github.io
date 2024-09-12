@@ -35,8 +35,8 @@ A reduction tree is actually a parallel reduction
 pattern whose leaves are original input elements and
 whose root is the final result. A reduction tree is not
 a tree data structure. Here, the edges share the
-information between the operations performed. For $N$
-input values, $log2N$ steps are taken to complete the
+information between the operations performed. For N
+input values, log2N steps are taken to complete the
 reduction process. The operator should be associated with
 the conversion from the sequential reduction to the
 reduction tree. We will also need to rearrange the
@@ -49,10 +49,10 @@ example of a typical parallel sum reduction tree:
 ### **A Simple Reduction Kernel**
 We will implement a parallel sum reduction tree such
 that reduction is performed within a single block.
-If the input block size is $N$, we will call a kernel
-and launch a grid with one block of $1/2N$ threads since
+If the input block size is N, we will call a kernel
+and launch a grid with one block of 1/2N threads since
 each thread adds two elements. In the next subsequent step,
-half of the threads will drop off; now, $1/4N$ threads
+half of the threads will drop off; now, 1/4N threads
 will participate. This thread will go on until
 only one thread is remaining to produce the total sum.
 
@@ -118,9 +118,9 @@ in shared memory, as shown in the figure and code below.
 
 <img alt="Minimizing Memory Divergence" src="/assets/CUDA/reduction_shared_mem.png" class="center" >
 
-Note that for an $N$ element input array, there will
-be just $N + 1$ global memory accesses. With coalescing,
-there will be $N/32$ global memory accesses.
+Note that for an N element input array, there will
+be just N + 1 global memory accesses. With coalescing,
+there will be N/32 global memory accesses.
 
 ```cuda
 __global__ void SharedMemorySumReductionKernel(float* input) {
@@ -143,7 +143,7 @@ __global__ void SharedMemorySumReductionKernel(float* input) {
 All the kernels above perform the reduction in a
 single block because we perform `__syncthreads()`
 operations which are limited within the block scope.
-This limits the level of parallelism to $1024$ threads
+This limits the level of parallelism to 1024 threads
 on current hardware. Things get slower when the input
 size increases. To resolve this, we partition the
 input elements into different segments such that each
@@ -236,4 +236,4 @@ Stay tuned for more!
 ### **Resources & References**
 <a id="link1">1</a>. Wen-mei W. Hwu, David B. Kirk, Izzat El Hajj, [Programming Massively Parallel Processors: A Hands-on Approach](https://www.amazon.in/Programming-Massively-Parallel-Processors-Hands/dp/0323912311), 4th edition, United States: Katey Birtcher; 2022 \
 <a id="link2">2</a>. [Lecture 9 Reductions](https://www.youtube.com/watch?v=09wntC6BT5o) by [Mark Saroufim](https://x.com/marksaroufim); Mar 2024 \
-<a id="link3">3</a>. [Excalidraw](https://excalidraw.com/) is used to draw the kernels.
+<a id="link3">3</a>. I used [Excalidraw](https://excalidraw.com/) to draw the kernels.
