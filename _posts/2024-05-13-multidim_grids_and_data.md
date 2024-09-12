@@ -181,7 +181,7 @@ colth col of N in the for-loop.
 For a matrix multiplication of two 4092<sup>2</sup> matrices followed by an
 addition of a 4092<sup>2</sup> matrix (for GEMM),
 the total FLOPS, total data read, and the actual data stored is given by:
-- Total FLOPS: 2*4092<sup>3</sup> + 4092<sup>2</sup> = 137 GFLOPS
+- Total FLOPS: 2 * 4092<sup>3</sup> + 4092<sup>2</sup> = 137 GFLOPS
 - Total data to read (minimum!): 3 * 4092<sup>2</sup> * 4B = 201MB
 - Total data to store: 4092<sup>2</sup> * 4B = 67MB
 
